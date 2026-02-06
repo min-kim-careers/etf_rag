@@ -1,0 +1,8 @@
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.removeUnusedImports": "always",
+    "source.organizeImports": "always"
+  },
+  "python.defaultInterpreterPath": "${workspaceFolder}/api/venv/bin/python"
+}
