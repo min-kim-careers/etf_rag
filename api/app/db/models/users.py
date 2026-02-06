@@ -9,15 +9,15 @@ from app.db.base import Base
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 
 
-class RecordDB(Base):
-    __tablename__ = "records"
+class UserDB(Base):
+    __tablename__ = "users"
 
     id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True), primary_key=True, default=uuid4
     )
 
     # # Required fields
-    # name: Mapped[str] = mapped_column(nullable=False)
+    name: Mapped[str] = mapped_column(nullable=False)
     # description: Mapped[str] = mapped_column(nullable=False)
     # price: Mapped[float] = mapped_column(nullable=False)
     # brand: Mapped[Optional[str]] = mapped_column(nullable=True)
@@ -32,16 +32,16 @@ class RecordDB(Base):
     # suburb: Mapped[str] = mapped_column(nullable=False)
     # state: Mapped[str] = mapped_column(nullable=False)
 
-    # created_at: Mapped[datetime] = mapped_column(
-    #     DateTime(timezone=True),
-    #     default=lambda: datetime.now(timezone.utc),
-    #     nullable=False,
-    # )
-    # updated_at: Mapped[datetime] = mapped_column(
-    #     DateTime(timezone=True),
-    #     default=lambda: datetime.now(timezone.utc),
-    #     nullable=False,
-    # )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
     # expires_at: Mapped[Optional[datetime]] = mapped_column(nullable=True)
 
     # user_id: Mapped[UUID] = mapped_column(
