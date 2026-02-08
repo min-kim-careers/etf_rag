@@ -1,19 +1,24 @@
 <script lang="ts">
+	import { goto } from '$app/navigation'
 	import Button from '$lib/components/button.svelte'
-	import { supabase } from '$lib/supabase/client'
 	import { toast } from 'svelte-sonner'
 	import z from 'zod'
+	import type { PageData } from './$types'
+
+	export let data: PageData
+	const { supabase } = data
 
 	const schema = z.object({
 		email: z.email({ message: 'Email required' }),
 		password: z.string({ message: 'Password required' }).nonempty({ message: 'Password required' }),
 		name: z.string({ message: 'Name required' }).nonempty({ message: 'Name required' })
 	})
-	const dummy = { email: 'someemail@gmail.com', password: 'some1234', name: 'somename' }
+	type Schema = z.infer<typeof schema>
+	const dummy = { email: 'someemail@gmail.com', password: 'some1234', name: 'somename' } as Schema
 	let loading = false
 
-	// let form = { email: '', password: '', name: '' } as z.infer<typeof schema>
-	let form = dummy
+	let form = { email: '', password: '', name: '' } as Schema
+	form = dummy
 	let errors = {} as any
 
 	async function submit() {
@@ -24,18 +29,19 @@
 				errors = z.treeifyError(formError).properties
 				return
 			}
+
 			const {
-				data: { session, user },
+				// data: { session, user },
 				error: authError
 			} = await supabase.auth.signUp({ ...form })
 			if (authError) {
-				console.log(authError.code)
-
 				if (authError.code === 'user_already_exists') {
 					toast.error('That email is taken')
 				} else {
 					throw authError
 				}
+			} else {
+				goto('/auth/login')
 			}
 		} catch (error) {
 			toast.error('Something went wrong')
