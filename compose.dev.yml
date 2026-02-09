@@ -61,6 +61,7 @@ services:
   dating-app_dev_gateway-service:
     container_name: dating-app_dev_gateway-container
     image: nginx:latest
+    restart: always
     ports:
       - 8083:8083
     env_file:

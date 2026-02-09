@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation'
 	import Button from '$lib/components/button.svelte'
+	import { APP_ROUTES } from '$lib/constants/app-routes'
 	import { toast } from 'svelte-sonner'
 	import z from 'zod'
 	import type { PageData } from './$types'
@@ -41,7 +42,7 @@
 					throw authError
 				}
 			} else {
-				goto('/auth/login')
+				goto(APP_ROUTES.auth.login)
 			}
 		} catch (error) {
 			toast.error('Something went wrong')

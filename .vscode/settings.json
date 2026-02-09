@@ -6,4 +6,12 @@
   },
   "python.defaultInterpreterPath": "${workspaceFolder}/api/.venv/bin/python",
   "python.analysis.importFormat": "absolute",
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true
+    , "**/.svelte-kit": true
+  }
 }

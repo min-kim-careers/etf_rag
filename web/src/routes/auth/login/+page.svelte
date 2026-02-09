@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation'
 	import Button from '$lib/components/button.svelte'
+	import { APP_ROUTES } from '$lib/constants/app-routes'
 	import { toast } from 'svelte-sonner'
 	import z from 'zod'
 	import type { PageData } from './$types'
@@ -36,7 +37,7 @@
 			if (authError) {
 				throw authError
 			} else {
-				goto('/app/home')
+				goto(APP_ROUTES.app.home)
 			}
 		} catch (error) {
 			toast.error('Something went wrong')
@@ -68,5 +69,5 @@
 		<Button type="submit" disabled={loading}>{loading ? 'Signing in' : 'Sign in'}</Button>
 	</form>
 
-	<a href="/auth/signup" class="text-sm underline">Create account</a>
+	<a href={APP_ROUTES.auth.signup} class="text-sm underline">Create account</a>
 </div>

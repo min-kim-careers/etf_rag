@@ -1,8 +1,13 @@
 import { PUBLIC_SUPABASE_PUBLISHABLE_KEY, PUBLIC_SUPABASE_URL } from '$env/static/public'
+import { APP_ROUTES } from '$lib/constants/app-routes'
 import { createServerClient } from '@supabase/ssr'
 import { redirect, type Handle } from '@sveltejs/kit'
 
 export const handle: Handle = async ({ event, resolve }) => {
+	console.log('hooks.server.ts')
+
+	skipSupabaseWarn()
+
 	event.locals.supabase = createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_PUBLISHABLE_KEY, {
 		cookies: {
 			getAll() {
@@ -47,11 +52,12 @@ export const handle: Handle = async ({ event, resolve }) => {
 		return { session, user }
 	}
 
-	if (!event.url.pathname.startsWith('/auth')) {
-		const { session } = await event.locals.safeGetSession()
-		if (!session) {
-			throw redirect(303, '/auth/login')
-		}
+	const { session } = await event.locals.safeGetSession()
+
+	if (!session && !event.url.pathname.startsWith('/auth')) {
+		throw redirect(303, APP_ROUTES.auth.login)
+	} else if (session && !event.url.pathname.startsWith('/app')) {
+		throw redirect(303, APP_ROUTES.app.home)
 	}
 
 	return resolve(event, {
@@ -59,4 +65,17 @@ export const handle: Handle = async ({ event, resolve }) => {
 			return name === 'content-range' || name === 'x-supabase-api-version'
 		}
 	})
+}
+
+function skipSupabaseWarn() {
+	const originalWarn = console.warn
+	console.warn = (...args) => {
+		if (
+			typeof args[0] === 'string' &&
+			args[0].includes('Using the user object as returned from supabase.auth.getSession()')
+		) {
+			return // skip this specific message
+		}
+		originalWarn(...args)
+	}
 }

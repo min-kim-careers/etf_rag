@@ -1,5 +1,4 @@
 import { cleanObject } from '$lib/helpers/clean-object'
-import { getSession } from '$lib/helpers/get-session'
 import { toURLSearchParams } from '$lib/helpers/to-url-search-params'
 import type { APIError, APIResponse } from '$lib/utils/client/types/api'
 import { env } from '$lib/utils/env'
@@ -105,13 +104,6 @@ class Client {
 	}
 
 	async result(): Promise<any> {
-		if (this.useSession) {
-			const session = await getSession()
-			if (session) {
-				this.addHeader({ cookie: `${env.sessionHeader}=${session}` })
-			}
-		}
-
 		// console.log(this.url.toString())
 		// console.log({
 		//   ...this.init,
