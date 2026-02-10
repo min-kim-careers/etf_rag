@@ -1,24 +1,13 @@
 <script lang="ts">
-	import { goto } from '$app/navigation'
 	import Button from '$lib/components/button.svelte'
-	import { APP_ROUTES } from '$lib/constants/app-routes'
 	import { toast } from 'svelte-sonner'
 	import z from 'zod'
-	import type { PageData } from './$types'
+	import { schema, type Schema } from './schema'
 
-	export let data: PageData
-	const { supabase } = data
-
-	const schema = z.object({
-		email: z.email({ message: 'Email required' }),
-		password: z.string({ message: 'Password required' }).nonempty({ message: 'Password required' }),
-		name: z.string({ message: 'Name required' }).nonempty({ message: 'Name required' })
-	})
-	type Schema = z.infer<typeof schema>
-	const dummy = { email: 'someemail@gmail.com', password: 'some1234', name: 'somename' } as Schema
+	const dummy = { email: 'someemail@gmail.com', password: 'some1234' } as Schema
 	let loading = false
 
-	let form = { email: '', password: '', name: '' } as Schema
+	let form = { email: '', password: '' } as Schema
 	form = dummy
 	let errors = {} as any
 
@@ -31,19 +20,19 @@
 				return
 			}
 
-			const {
-				// data: { session, user },
-				error: authError
-			} = await supabase.auth.signUp({ ...form })
-			if (authError) {
-				if (authError.code === 'user_already_exists') {
-					toast.error('That email is taken')
-				} else {
-					throw authError
-				}
-			} else {
-				goto(APP_ROUTES.auth.login)
-			}
+			// const {
+			// 	// data: { session, user },
+			// 	error: authError
+			// } = await supabase.auth.signUp({ ...form })
+			// if (authError) {
+			// 	if (authError.code === 'user_already_exists') {
+			// 		toast.error('That email is taken')
+			// 	} else {
+			// 		throw authError
+			// 	}
+			// } else {
+			// 	goto(APP_ROUTES.auth.login)
+			// }
 		} catch (error) {
 			toast.error('Something went wrong')
 		} finally {
@@ -69,11 +58,6 @@
 		/>
 		{#if errors.password}
 			<p class="text-sm text-red-500">{errors.password.errors}</p>
-		{/if}
-
-		<input type="text" class="rounded border p-2" placeholder="Name" bind:value={form.name} />
-		{#if errors.name}
-			<p class="text-sm text-red-500">{errors.name.errors}</p>
 		{/if}
 
 		<Button type="submit" disabled={loading}>{loading ? 'Signing up' : 'Sign up'}</Button>

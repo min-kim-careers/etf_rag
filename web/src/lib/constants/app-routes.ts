@@ -1,11 +1,11 @@
 export const APP_ROUTES = {
 	auth: {
 		login: '/auth/login',
+		logout: '/auth/logout',
 		signup: '/auth/signup'
 	},
-
-	app: {
-		home: '/app/home',
-		createProfile: '/app/profile/create'
+	home: '/home',
+	profile: {
+		create: '/profile/create'
 	}
 } as const

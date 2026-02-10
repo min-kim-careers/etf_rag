@@ -2,8 +2,6 @@ import { APP_ROUTES } from '$lib/constants/app-routes.js'
 import { redirect } from '@sveltejs/kit'
 
 export async function load({ parent }) {
-	console.log('app/+layout.server.ts')
-
 	const data = await parent()
 
 	// if (data && data.user) {
@@ -22,5 +20,5 @@ export async function load({ parent }) {
 	// 	console.error(error)
 	// }
 
-	throw redirect(303, APP_ROUTES.app.createProfile)
+	throw redirect(303, APP_ROUTES.app.profile.create)
 }

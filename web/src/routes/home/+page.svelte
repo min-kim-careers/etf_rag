@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Profile } from '$lib/supabase/profiles'
+	import type { Profile } from '$lib/types/profiles'
 
 	export let data: { profile: Profile }
 
