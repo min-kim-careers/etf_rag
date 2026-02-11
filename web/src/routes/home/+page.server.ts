@@ -20,5 +20,5 @@ export async function load({ parent }) {
 	// 	console.error(error)
 	// }
 
-	throw redirect(303, APP_ROUTES.app.profile.create)
+	throw redirect(303, APP_ROUTES.profile.create)
 }

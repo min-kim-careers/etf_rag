@@ -7,8 +7,6 @@ if (!port) {
 	throw new Error('Missing PORT')
 }
 
-const host = process.env.HOST
-
 export default defineConfig({
 	plugins: [tailwindcss(), sveltekit()],
 	server: {
@@ -16,6 +14,9 @@ export default defineConfig({
 	},
 	preview: {
 		port,
-		allowedHosts: ['localhost', ...(process.env.NODE_ENV === 'production' && host ? [host] : [])]
+		allowedHosts: [
+			'localhost',
+			...(process.env.NODE_ENV === 'production' && process.env.HOST ? [process.env.HOST] : [])
+		]
 	}
 })

@@ -27,6 +27,6 @@ export const actions = {
 		// 	return fail(400, { form })
 		// }
 
-		throw redirect(303, APP_ROUTES.app.home)
+		throw redirect(303, APP_ROUTES.home)
 	}
 }

@@ -1,7 +1,6 @@
 import { cleanObject } from '$lib/helpers/clean-object'
 import { toURLSearchParams } from '$lib/helpers/to-url-search-params'
 import type { APIError, APIResponse } from '$lib/utils/client/types/api'
-import { env } from '$lib/utils/env'
 
 type ApiKey = {
 	header: string
@@ -132,5 +131,9 @@ class Client {
 	}
 }
 
+const apiUrl = ''
+const apiKeyHeader = ''
+const apiKey = ''
+
 export const client = async () =>
-	new Client().setBase(env.apiUrl).setApiKey({ header: env.apiKeyHeader, key: env.apiKey })
+	new Client().setBase(apiUrl).setApiKey({ header: apiKeyHeader, key: apiKey })
