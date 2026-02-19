@@ -1,7 +1,7 @@
-name: dating-app_dev
+name: untitled_dev
 services:
-  dating-app_dev_db-service:
-    container_name: dating-app_dev_db-container
+  untitled_dev_db-service:
+    container_name: untitled_dev_db-container
     restart: always
     image: postgres:latest
     environment:
@@ -23,10 +23,10 @@ services:
     networks:
       - backend-network
 
-  dating-app_dev_web-service:
-    container_name: dating-app_dev_web-container
+  untitled_dev_web-service:
+    container_name: untitled_dev_web-container
     restart: always
-    image: dating-app_dev_web-image
+    image: untitled_dev_web-image
     build:
       context: ./web
       target: dev
@@ -35,8 +35,8 @@ services:
     environment:
       - BETTER_AUTH_SECRET=REDACTED
       - BETTER_AUTH_URL=http://192.168.8.103:8083
-      - DB_URL=postgres://dbuser:dbpass@dating-app_dev_db-service:5432/dbname
-      - PUBLIC_APP_TITLE=Dating
+      - DB_URL=postgres://dbuser:dbpass@untitled_dev_db-service:5432/dbname
+      - PUBLIC_APP_TITLE=UNTITLED
     volumes:
       - ./web:/app
     networks:
@@ -44,8 +44,8 @@ services:
       - gateway-network
       - backend-network
 
-  dating-app_dev_gateway-service:
-    container_name: dating-app_dev_gateway-container
+  untitled_dev_gateway-service:
+    container_name: untitled_dev_gateway-container
     image: nginx:latest
     restart: always
     ports:
@@ -53,7 +53,7 @@ services:
     environment:
       - HOST=192.168.8.103
       - PORT=8083
-      - WEB_SERVICE=dating-app_dev_web-service:5173
+      - WEB_SERVICE=untitled_dev_web-service:5173
     volumes:
       - ./gateway/default.conf.template:/etc/nginx/templates/default.conf.template:ro
     networks:
