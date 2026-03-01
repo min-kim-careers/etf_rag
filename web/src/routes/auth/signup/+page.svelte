@@ -1,65 +1,45 @@
 <script lang="ts">
 	import Button from '$lib/components/button.svelte'
-	import { toast } from 'svelte-sonner'
-	import z from 'zod'
-	import { schema, type Schema } from './schema'
+	import { superForm, type SuperValidated } from 'sveltekit-superforms'
 
-	const dummy = { email: 'someemail@gmail.com', password: 'some1234' } as Schema
-	let loading = false
-
-	let form = { email: '', password: '' } as Schema
-	form = dummy
-	let errors = {} as any
-
-	async function submit() {
-		try {
-			loading = true
-			const { success, error: formError } = schema.safeParse(form)
-			if (!success) {
-				errors = z.treeifyError(formError).properties
-				return
-			}
-
-			// const {
-			// 	// data: { session, user },
-			// 	error: authError
-			// } = await supabase.auth.signUp({ ...form })
-			// if (authError) {
-			// 	if (authError.code === 'user_already_exists') {
-			// 		toast.error('That email is taken')
-			// 	} else {
-			// 		throw authError
-			// 	}
-			// } else {
-			// 	goto(APP_ROUTES.auth.login)
-			// }
-		} catch (error) {
-			toast.error('Something went wrong')
-		} finally {
-			loading = false
-		}
+	export let data: {
+		form: SuperValidated<any>
 	}
+
+	const { form, errors, enhance, submitting, delayed } = superForm(data.form)
 </script>
 
 <h1 class="">Create your account</h1>
 
 <div class="m-10 flex flex-col items-center space-y-4">
-	<form class=" flex flex-col gap-4" on:submit|preventDefault={submit}>
-		<input type="email" class="rounded border p-2" placeholder="Email" bind:value={form.email} />
-		{#if errors.email}
-			<p class="text-sm text-red-500">{errors.email.errors}</p>
+	<form class="flex flex-col gap-4" method="POST" use:enhance>
+		<input name="name" class="rounded border p-2" placeholder="Name" bind:value={$form.name} />
+		{#if $errors.name}
+			<p class="px-2 text-sm text-red-500">{$errors.name}</p>
+		{/if}
+
+		<input name="email" class="rounded border p-2" placeholder="Email" bind:value={$form.email} />
+		{#if $errors.email}
+			<p class="px-2 text-sm text-red-500">{$errors.email}</p>
 		{/if}
 
 		<input
 			type="password"
+			name="password"
 			class="rounded border p-2"
 			placeholder="Password"
-			bind:value={form.password}
+			bind:value={$form.password}
 		/>
-		{#if errors.password}
-			<p class="text-sm text-red-500">{errors.password.errors}</p>
+		{#if $errors.password}
+			<p class="px-2 text-sm text-red-500">{$errors.password}</p>
 		{/if}
 
-		<Button type="submit" disabled={loading}>{loading ? 'Signing up' : 'Sign up'}</Button>
+		<Button type="submit" disabled={$submitting}>
+			{#if $delayed}
+				Creating account
+			{:else}
+				Create account
+			{/if}</Button
+		>
 	</form>
 </div>

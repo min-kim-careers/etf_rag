@@ -35,6 +35,7 @@ services:
     environment:
       - BETTER_AUTH_SECRET=REDACTED
       - BETTER_AUTH_URL=http://192.168.8.103:8083
+      # refer to db service auth details
       - DB_URL=postgres://dbuser:dbpass@untitled_dev_db-service:5432/dbname
       - PUBLIC_APP_TITLE=UNTITLED
     volumes:
