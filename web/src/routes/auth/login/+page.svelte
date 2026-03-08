@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { PUBLIC_APP_TITLE } from '$env/static/public'
 	import Button from '$lib/components/button.svelte'
+	import { APP_DATA } from '$lib/constants/app-data'
 	import { APP_ROUTES } from '$lib/constants/app-routes'
-	import { toast } from 'svelte-sonner'
+	import toast from 'svelte-french-toast'
 	import { superForm, type SuperValidated } from 'sveltekit-superforms'
 
 	export let data: {
@@ -10,11 +10,13 @@
 	}
 
 	const { form, errors, enhance, submitting, delayed } = superForm(data.form, {
-		onResult: () => toast.success('Signed in successfully!')
+		onResult(event) {
+			toast('Signed in successfully.')
+		}
 	})
 </script>
 
-<h1 class="">Welcome to {PUBLIC_APP_TITLE}</h1>
+<h1 class="">Welcome to {APP_DATA.title}</h1>
 
 <div class="m-10 flex flex-col items-center space-y-4">
 	<form class="flex flex-col gap-4" method="POST" use:enhance>

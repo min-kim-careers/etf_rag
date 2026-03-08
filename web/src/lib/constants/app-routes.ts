@@ -3,8 +3,9 @@ export const APP_ROUTES = {
 		login: '/auth/login',
 		signup: '/auth/signup'
 	},
-	home: '/home',
+	home: '/',
 	profile: {
 		create: '/profile/create'
-	}
+	},
+	signout: '/signout'
 } as const

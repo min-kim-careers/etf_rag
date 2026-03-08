@@ -1,15 +1,12 @@
 <script lang="ts">
 	import Button from '$lib/components/button.svelte'
-	import { toast } from 'svelte-sonner'
 	import { superForm, type SuperValidated } from 'sveltekit-superforms'
 
 	export let data: {
 		form: SuperValidated<any>
 	}
 
-	const { form, errors, enhance, submitting, delayed } = superForm(data.form, {
-		onResult: () => toast.success('Profile created successfully!')
-	})
+	const { form, errors, enhance, submitting, delayed } = superForm(data.form, {})
 </script>
 
 <h1 class="">Create Profile</h1>
