@@ -1,5 +1,5 @@
 import { APP_ROUTES } from '$lib/constants/app-routes.js'
-import { auth } from '$lib/utils/auth'
+import { auth } from '$lib/utils/better-auth/config'
 import { redirect } from '@sveltejs/kit'
 
 export async function load({ request }) {

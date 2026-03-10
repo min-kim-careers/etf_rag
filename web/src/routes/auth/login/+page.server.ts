@@ -1,5 +1,5 @@
 import { APP_ROUTES } from '$lib/constants/app-routes'
-import { auth } from '$lib/utils/auth'
+import { auth } from '$lib/utils/better-auth/config'
 import { fail, redirect, type Actions } from '@sveltejs/kit'
 import { zod4 } from 'sveltekit-superforms/adapters'
 import { setError, superValidate } from 'sveltekit-superforms/server'

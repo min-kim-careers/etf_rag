@@ -1,11 +1,13 @@
 from contextlib import asynccontextmanager
 
 from app.core.logger import logger
-from app.core.schemas.error import ErrorResponse
+from app.schemas.error import ErrorResponse
 from app.db.session import init_db
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+
+from app.product.router import router as product_router
 
 
 async def startup():
@@ -49,3 +51,6 @@ async def global_exception_handler(_: Request, exc: Exception):
         status_code=500,
         message="Internal Server Error",
     )
+
+
+app.include_router(product_router)

@@ -4,6 +4,12 @@
     "source.removeUnusedImports": "always",
     "source.organizeImports": "always"
   },
+  "[python]": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "always",
+      "source.unusedImports": "always"
+    }
+  },
   "python.defaultInterpreterPath": "${workspaceFolder}/api/.venv/bin/python",
   "python.analysis.importFormat": "absolute",
   "files.exclude": {
@@ -11,7 +17,7 @@
     "**/.svn": true,
     "**/.hg": true,
     "**/.DS_Store": true,
-    "**/Thumbs.db": true
-    , "**/.svelte-kit": true
-  },
+    "**/Thumbs.db": true,
+    "**/.svelte-kit": true
+  }
 }

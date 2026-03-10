@@ -6,3 +6,6 @@ asyncpg
 faker
 humanize
 redis
+
+pandas
+requests

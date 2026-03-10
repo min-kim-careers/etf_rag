@@ -2,7 +2,7 @@ from typing import Dict, Optional
 
 from fastapi import HTTPException
 
-from app.core.schemas.outbound import OutboundBase
+from app.schemas.outbound import OutboundBase
 
 
 class ErrorDetail(OutboundBase):
