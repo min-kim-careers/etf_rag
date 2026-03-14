@@ -1,13 +1,12 @@
-import type { CsvRow } from '$lib/types/csv-row'
 import Papa from 'papaparse'
 
-export async function extractCsvRows(file: File): Promise<CsvRow[] | null> {
+export async function extractCsvRows(file: File) {
 	return new Promise((resolve) => {
 		Papa.parse(file, {
 			header: true,
 			transformHeader: (h) => h.toLowerCase(),
 			skipEmptyLines: true,
-			complete: (results) => resolve((results.data as CsvRow[]) || null),
+			complete: (results) => resolve(results.data || null),
 			error: () => resolve(null)
 		})
 	})

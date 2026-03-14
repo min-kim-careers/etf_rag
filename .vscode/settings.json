@@ -10,7 +10,8 @@
       "source.unusedImports": "always"
     }
   },
-  "python.defaultInterpreterPath": "${workspaceFolder}/api/.venv/bin/python",
+  "python.defaultInterpreterPath": "/home/gmk/untitled/api/.venv/bin/python",
+  "python.analysis.extraPaths": ["./api"],
   "python.analysis.importFormat": "absolute",
   "files.exclude": {
     "**/.git": true,

@@ -1,17 +1,11 @@
 import { streamModel } from '$lib/utils/langchain/config'
 
+const streamSpeed = 10
+
 export const POST = async ({ request }) => {
 	const { prompt } = await request.json()
 
-	let modelStream
-	try {
-		modelStream = await streamModel(prompt)
-	} catch (err: any) {
-		if (err.code === 429 || err.status === 429) {
-			throw new Error(`Rate limit reached: ${err}`)
-		}
-		throw new Error(`Error creating response stream: ${err}`)
-	}
+	let modelStream = await streamModel(prompt)
 
 	const encoder = new TextEncoder()
 	const body = new ReadableStream({
@@ -22,7 +16,7 @@ export const POST = async ({ request }) => {
 					if (text && typeof text === 'string') {
 						for (const char of text) {
 							controller.enqueue(encoder.encode(char))
-							await new Promise((r) => setTimeout(r, 15))
+							await new Promise((r) => setTimeout(r, streamSpeed))
 						}
 					}
 				}

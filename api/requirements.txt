@@ -8,4 +8,6 @@ humanize
 redis
 
 pandas
+openpyxl
 requests
+bs4

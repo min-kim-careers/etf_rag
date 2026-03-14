@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { cn } from '$lib/components/shadcn/utils'
 	import { API_ROUTES } from '$lib/constants/api-routes'
+	import SvelteMarkdown from '@humanspeak/svelte-markdown'
 	import toast from 'svelte-french-toast'
 
 	type Message = {
@@ -59,7 +60,7 @@
 							m.role === 'user' ? 'bg-muted' : 'bg-background'
 						)}
 					>
-						{m.content}
+						<SvelteMarkdown source={m.content} />
 					</p>
 				</li>
 			{/if}
