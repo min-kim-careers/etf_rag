@@ -10,8 +10,12 @@
 	}
 
 	const { form, errors, enhance, submitting, delayed } = superForm(data.form, {
-		onResult(event) {
-			toast('Signed in successfully.')
+		onUpdated({ form }) {
+			if (form.valid) {
+				// toast('Signed in successfully.')
+			} else {
+				toast('Invalid credentials.')
+			}
 		}
 	})
 </script>

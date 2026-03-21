@@ -1,5 +1,5 @@
 import { APP_ROUTES } from '$lib/constants/app-routes'
-import { auth } from '$lib/utils/better-auth/config'
+import { auth } from '$lib/utils/better-auth/server'
 import { fail, redirect } from '@sveltejs/kit'
 import { zod4 } from 'sveltekit-superforms/adapters'
 import { setError, superValidate } from 'sveltekit-superforms/server'
@@ -31,10 +31,12 @@ export const actions = {
 				}
 			})
 		} catch (error) {
-			setError(form, 'email', 'That email already exists.')
-			return { form }
+			console.error(error)
+
+			setError(form, 'email', 'That email is taken.')
+			return fail(400, { form })
 		}
 
-		throw redirect(303, APP_ROUTES.home)
+		throw redirect(303, APP_ROUTES.auth.login)
 	}
 }

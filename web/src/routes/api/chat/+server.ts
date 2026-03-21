@@ -1,4 +1,5 @@
 import { streamModel } from '$lib/utils/langchain/config'
+import { ToolMessage } from 'langchain'
 
 const streamSpeed = 10
 
@@ -12,12 +13,22 @@ export const POST = async ({ request }) => {
 		async start(controller) {
 			try {
 				for await (const chunk of modelStream) {
-					const text = chunk[0].content
-					if (text && typeof text === 'string') {
-						for (const char of text) {
-							controller.enqueue(encoder.encode(char))
-							await new Promise((r) => setTimeout(r, streamSpeed))
-						}
+					const message = chunk[0]
+
+					if (message instanceof ToolMessage) continue
+
+					// // log everything
+					// console.log('TYPE:', message?.constructor?.name)
+					// console.log('CONTENT TYPE:', typeof message?.content)
+					// console.log('CONTENT:', JSON.stringify(message?.content)?.slice(0, 100))
+					// console.log('---')
+
+					const content = message.content
+					if (!content || typeof content !== 'string') continue
+
+					for (const char of content) {
+						controller.enqueue(encoder.encode(char))
+						await new Promise((r) => setTimeout(r, streamSpeed))
 					}
 				}
 			} catch (err: any) {

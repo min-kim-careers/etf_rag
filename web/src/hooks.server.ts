@@ -1,6 +1,6 @@
 import { building } from '$app/environment'
 import { APP_ROUTES } from '$lib/constants/app-routes'
-import { auth } from '$lib/utils/better-auth/config'
+import { auth } from '$lib/utils/better-auth/server'
 import { redirect } from '@sveltejs/kit'
 import { svelteKitHandler } from 'better-auth/svelte-kit'
 

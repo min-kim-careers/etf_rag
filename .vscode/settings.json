@@ -10,7 +10,7 @@
       "source.unusedImports": "always"
     }
   },
-  "python.defaultInterpreterPath": "/home/gmk/untitled/api/.venv/bin/python",
+  "python.defaultInterpreterPath": "/home/gmk/etf/api/.venv/bin/python",
   "python.analysis.extraPaths": ["./api"],
   "python.analysis.importFormat": "absolute",
   "files.exclude": {

@@ -1,5 +1,6 @@
 import { APP_ROUTES } from '$lib/constants/app-routes'
-import { auth } from '$lib/utils/better-auth/config'
+import { setFlash } from '$lib/helpers/flash-helpers'
+import { auth } from '$lib/utils/better-auth/server'
 import { fail, redirect, type Actions } from '@sveltejs/kit'
 import { zod4 } from 'sveltekit-superforms/adapters'
 import { setError, superValidate } from 'sveltekit-superforms/server'
@@ -15,7 +16,7 @@ export const load = async () => {
 }
 
 export const actions: Actions = {
-	default: async ({ request, locals }) => {
+	default: async ({ request, cookies }) => {
 		const form = await superValidate(request, zod4(schema))
 
 		if (!form.valid) {
@@ -29,6 +30,8 @@ export const actions: Actions = {
 					password: form.data.password
 				}
 			})
+
+			setFlash({ cookies, path: APP_ROUTES.home, key: 'signed-in', value: '1' })
 		} catch (error) {
 			setError(form, 'password', 'Invalid email or password')
 			return { form }

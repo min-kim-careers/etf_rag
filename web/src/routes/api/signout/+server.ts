@@ -1,4 +1,4 @@
-import { auth } from '$lib/utils/better-auth/config'
+import { auth } from '$lib/utils/better-auth/server'
 import { json } from '@sveltejs/kit'
 
 export const POST = async ({ request }) => {

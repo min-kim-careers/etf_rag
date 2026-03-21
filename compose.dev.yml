@@ -1,7 +1,7 @@
-name: untitled_dev
+name: etf_dev
 services:
-  untitled_dev_db-service:
-    container_name: untitled_dev_db-container
+  etf_dev_db-service:
+    container_name: etf_dev_db-container
     restart: always
     image: postgres:latest
     environment:
@@ -23,9 +23,9 @@ services:
     networks:
       - backend-network
 
-  untitled_dev_api-service:
-    container_name: untitled_dev_api-container
-    image: untitled_dev_api-image
+  etf_dev_api-service:
+    container_name: etf_dev_api-container
+    image: etf_dev_api-image
     restart: always
     build:
       context: ./api
@@ -33,7 +33,7 @@ services:
       target: dev
     environment:
       # Refer to DB service authentication details
-      - DB_URL=dbuser:dbpass@untitled_dev_db-service:5432/dbname
+      - DB_URL=dbuser:dbpass@etf_dev_db-service:5432/dbname
     volumes:
       - ./api/app:/code/app
       - venv:/code/.venv
@@ -41,10 +41,10 @@ services:
     networks:
       - backend-network
 
-  untitled_dev_web-service:
-    container_name: untitled_dev_web-container
+  etf_dev_web-service:
+    container_name: etf_dev_web-container
     restart: always
-    image: untitled_dev_web-image
+    image: etf_dev_web-image
     build:
       context: ./web
       target: dev
@@ -55,9 +55,9 @@ services:
       - BETTER_AUTH_SECRET=REDACTED
       - BETTER_AUTH_URL=http://192.168.8.103:8083
       # Refer to DB service authentication details
-      - DB_URL=postgres://dbuser:dbpass@untitled_dev_db-service:5432/dbname
-      - API_URL=http://untitled_dev_api-service:8000
-      - PUBLIC_APP_TITLE=UNTITLED
+      - DB_URL=postgres://dbuser:dbpass@etf_dev_db-service:5432/dbname
+      - API_URL=http://etf_dev_api-service:8000
+      - PUBLIC_APP_TITLE=ETF
     volumes:
       - ./web:/app
     networks:
@@ -65,8 +65,8 @@ services:
       - gateway-network
       - backend-network
 
-  untitled_dev_gateway-service:
-    container_name: untitled_dev_gateway-container
+  etf_dev_gateway-service:
+    container_name: etf_dev_gateway-container
     image: nginx:latest
     restart: always
     ports:
@@ -74,7 +74,7 @@ services:
     environment:
       - HOST=192.168.8.103
       - PORT=8083
-      - WEB_SERVICE=untitled_dev_web-service:5173
+      - WEB_SERVICE=etf_dev_web-service:5173
     volumes:
       - ./gateway/default.conf.template:/etc/nginx/templates/default.conf.template:ro
     networks:

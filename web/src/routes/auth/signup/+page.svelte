@@ -1,12 +1,21 @@
 <script lang="ts">
 	import Button from '$lib/components/button.svelte'
+	import toast from 'svelte-french-toast'
 	import { superForm, type SuperValidated } from 'sveltekit-superforms'
 
 	export let data: {
 		form: SuperValidated<any>
 	}
 
-	const { form, errors, enhance, submitting, delayed } = superForm(data.form)
+	const { form, errors, enhance, submitting, delayed } = superForm(data.form, {
+		onUpdated({ form }) {
+			if (form.valid) {
+				// toast('Signed up successfully.')
+			} else {
+				toast('Something went wrong.')
+			}
+		}
+	})
 </script>
 
 <h1 class="">Create your account</h1>

@@ -5,7 +5,8 @@ import { sveltekitCookies } from 'better-auth/svelte-kit'
 
 export const auth = betterAuth({
 	emailAndPassword: {
-		enabled: true
+		enabled: true,
+		autoSignIn: false
 	},
 	database: dbPool,
 	plugins: [sveltekitCookies(getRequestEvent)]

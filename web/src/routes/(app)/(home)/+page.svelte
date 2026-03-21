@@ -3,20 +3,29 @@
 	import { API_ROUTES } from '$lib/constants/api-routes'
 	import SvelteMarkdown from '@humanspeak/svelte-markdown'
 	import toast from 'svelte-french-toast'
+	import WelcomeToast from './welcome-toast.svelte'
+
+	let { data }: { data: { username: string; signedIn: string } } = $props()
+
+	$effect(() => {
+		if (data.signedIn === '1') {
+			toast(WelcomeToast)
+		}
+	})
 
 	type Message = {
 		role: 'user' | 'agent'
 		content: string
 	}
 
-	let messages: Message[] = []
-	let responding = false
-	let prompt = ''
+	let messages: Message[] = $state([])
+	let responding = $state(false)
+	let prompt = $state('')
 
-	async function handleSubmit() {
+	async function handleSubmit(e: SubmitEvent) {
+		e.preventDefault()
 		if (!prompt) return
 		messages.push({ role: 'user', content: prompt }, { role: 'agent', content: '' })
-		console.log(messages)
 
 		const _prompt = prompt
 		prompt = ''
@@ -67,7 +76,7 @@
 		{/each}
 	</ul>
 
-	<form class="flex w-full gap-2" on:submit|preventDefault={handleSubmit}>
+	<form class="flex w-full gap-2" onsubmit={handleSubmit}>
 		<input
 			bind:value={prompt}
 			type="text"
