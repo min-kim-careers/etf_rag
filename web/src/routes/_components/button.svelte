@@ -1,6 +1,6 @@
 <script lang="ts">
+	import { cn } from '$lib/shadcn/utils'
 	import type { HTMLButtonAttributes } from 'svelte/elements'
-	import { cn } from './shadcn/utils'
 
 	let { children, ...restProps }: HTMLButtonAttributes & Record<string, any> = $props()
 </script>

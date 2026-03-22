@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Button from '$lib/components/button.svelte'
 	import toast from 'svelte-french-toast'
 	import { superForm, type SuperValidated } from 'sveltekit-superforms'
+	import Button from '../../_components/button.svelte'
 
 	export let data: {
 		form: SuperValidated<any>

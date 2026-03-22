@@ -14,9 +14,7 @@
 	const { username }: { username: string } = $props()
 </script>
 
-<div class="mx-4 flex justify-between text-sm">
-	<div class="">{username}</div>
-
+{#snippet api()}
 	<button
 		class="cursor-pointer underline"
 		onclick={async () => {
@@ -54,6 +52,10 @@
 	>
 		List Products</button
 	>
+{/snippet}
+
+<div class="mx-4 flex justify-between text-sm">
+	<div class="">{username}</div>
 
 	<button
 		class="cursor-pointer"

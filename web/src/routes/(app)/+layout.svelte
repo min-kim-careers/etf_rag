@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Header from '$lib/components/header.svelte'
+	import Header from '$routes/_components/header.svelte'
 
 	let { data, children } = $props()
 </script>
