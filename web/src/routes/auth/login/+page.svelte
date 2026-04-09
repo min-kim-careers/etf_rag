@@ -1,13 +1,16 @@
 <script lang="ts">
-	import { APP_DATA } from '$lib/constants/app-data'
-	import { APP_ROUTES } from '$lib/constants/app-routes'
+	import { APP_DATA, APP_ROUTES } from '$lib/constants'
 	import toast from 'svelte-french-toast'
 	import { superForm, type SuperValidated } from 'sveltekit-superforms'
 	import Button from '../../_components/button.svelte'
 
-	export let data: {
-		form: SuperValidated<any>
-	}
+	let { data }: { data: { form: SuperValidated<any>; createdAccount: string } } = $props()
+
+	$effect(() => {
+		if (data.createdAccount === '1') {
+			toast('Account created successfully!')
+		}
+	})
 
 	const { form, errors, enhance, submitting, delayed } = superForm(data.form, {
 		onUpdated({ form }) {

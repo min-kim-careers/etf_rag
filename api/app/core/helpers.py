@@ -41,6 +41,11 @@ def decode_uuid(s: str) -> UUID:
     return UUID(bytes=b)
 
 
+@log_exception
+def to_dict(obj):
+    return {col.name: getattr(obj, col.name) for col in obj.__table__.columns}
+
+
 def encode_str(s: str) -> str:
     return base64.urlsafe_b64encode(s.encode()).rstrip(b"=").decode()
 

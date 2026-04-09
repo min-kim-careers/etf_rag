@@ -1,7 +1,7 @@
 import { auth } from '$lib/utils/better-auth/server'
 import { json } from '@sveltejs/kit'
 
-export const POST = async ({ request }) => {
+export const signout = async (request: Request) => {
 	try {
 		await auth.api.signOut({ headers: request.headers })
 		return json({ success: true })

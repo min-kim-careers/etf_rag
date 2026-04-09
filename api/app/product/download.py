@@ -4,11 +4,21 @@ from app.core.logger import logger
 import requests
 from bs4 import BeautifulSoup
 
+from pathlib import Path
 
-def download(asx_url: str, save_path: str):
+
+asx_etf_url = "https://www.asx.com.au/issuers/investment-products/asx-investment-products-monthly-report"
+
+save_folder = (Path(__file__).parent / ".." / "data").resolve()
+save_folder.mkdir(parents=True, exist_ok=True)
+
+save_path = save_folder / "latest.xlsx"
+
+
+def download():
     try:
         logger.info("Starting download..")
-        with requests.get(url=asx_url, stream=True) as r:
+        with requests.get(url=asx_etf_url, stream=True) as r:
             r.raise_for_status()
 
             soup = BeautifulSoup(r.text, "html.parser")

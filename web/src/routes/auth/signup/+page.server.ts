@@ -1,4 +1,5 @@
-import { APP_ROUTES } from '$lib/constants/app-routes'
+import { APP_ROUTES } from '$lib/constants'
+import { setFlash } from '$lib/helpers/flash-helpers'
 import { auth } from '$lib/utils/better-auth/server'
 import { fail, redirect } from '@sveltejs/kit'
 import { zod4 } from 'sveltekit-superforms/adapters'
@@ -15,7 +16,7 @@ export async function load() {
 }
 
 export const actions = {
-	default: async ({ request, locals }) => {
+	default: async ({ request, locals, cookies }) => {
 		const form = await superValidate(request, zod4(schema))
 
 		if (!form.valid) {
@@ -30,6 +31,8 @@ export const actions = {
 					password: form.data.password
 				}
 			})
+
+			setFlash({ cookies, path: APP_ROUTES.home, key: 'created-account', value: '1' })
 		} catch (error) {
 			console.error(error)
 

@@ -1,18 +1,22 @@
-import { APP_ROUTES } from '$lib/constants/app-routes'
-import { setFlash } from '$lib/helpers/flash-helpers'
+import { APP_ROUTES } from '$lib/constants'
+import { getFlash, setFlash } from '$lib/helpers/flash-helpers'
 import { auth } from '$lib/utils/better-auth/server'
 import { fail, redirect, type Actions } from '@sveltejs/kit'
 import { zod4 } from 'sveltekit-superforms/adapters'
 import { setError, superValidate } from 'sveltekit-superforms/server'
 import { schema } from './schema'
 
-export const load = async () => {
+const mockForm = { email: 'someemail@gmail.com', password: 'some1234' }
+
+export const load = async ({ cookies }) => {
 	const form = await superValidate(zod4(schema), {
-		defaults: { email: 'someemail@gmail.com', password: 'some1234' },
+		defaults: mockForm,
 		errors: true
 	})
 
-	return { form }
+	const createdAccount = getFlash({ cookies, path: APP_ROUTES.home, key: 'created-account' })
+
+	return { form, createdAccount }
 }
 
 export const actions: Actions = {

@@ -1,6 +1,6 @@
 import { tool } from '@langchain/core/tools'
 import z from 'zod'
-import { getProductCategories } from '../../../routes/api/product/[...path]/get-product-categories'
+import { getProductCategories } from '../../../routes/_api/product/[...path]/get-product-categories'
 
 export const getProductCategoriesTool = tool(
 	async () => {

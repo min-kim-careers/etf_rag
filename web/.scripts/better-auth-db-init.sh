@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BETTER_AUTH_CONFIG_PATH=src/lib/utils/better-auth/config.ts
+BETTER_AUTH_CONFIG_PATH=src/lib/utils/better-auth/server.ts
 
 docker exec -it etf_dev_web-container \
   npx @better-auth/cli@latest generate --yes --config $BETTER_AUTH_CONFIG_PATH

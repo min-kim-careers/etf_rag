@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { API_ROUTES } from '$lib/constants/api-routes'
 	import { cn } from '$lib/shadcn/utils'
+	import type { Message } from '$lib/types/message'
 	import type { Provider } from '$lib/utils/langchain/config'
 	import WelcomeToast from '$routes/_components/welcome-toast.svelte'
 	import SvelteMarkdown from '@humanspeak/svelte-markdown'
@@ -15,15 +15,10 @@
 		}
 	})
 
-	type Message = {
-		role: 'user' | 'agent'
-		content: string
-	}
-
 	let messages: Message[] = $state([])
 	let responding = $state(false)
 	let prompt = $state('')
-	let provider: Provider = $state('gemini')
+	let provider: Provider = $state('local')
 
 	async function handleSubmit(e: SubmitEvent) {
 		e.preventDefault()
@@ -36,9 +31,9 @@
 
 		try {
 			responding = true
-			const res = await fetch(API_ROUTES.chat, {
+			const res = await fetch('/_api/chat/stream', {
 				method: 'POST',
-				headers: { 'Context-Type': 'application/json' },
+				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ prompt: _prompt })
 			})
 

@@ -1,6 +1,7 @@
 import { parseSearchParams } from '$lib/helpers/parse-search-params'
 import type { Product } from '$lib/types/product'
 import { dbPool } from '$lib/utils/db/config'
+import { json } from '@sveltejs/kit'
 import z from 'zod'
 
 const ParamsSchema = z.object({
@@ -17,7 +18,7 @@ const ParamsSchema = z.object({
 		.optional()
 })
 
-export const getProducts = async (params: URLSearchParams): Promise<Product[]> => {
+export const getProducts = async (params: URLSearchParams): Promise<any> => {
 	const { success, data, error } = ParamsSchema.safeParse(parseSearchParams(params))
 
 	if (!success) {
@@ -28,7 +29,7 @@ export const getProducts = async (params: URLSearchParams): Promise<Product[]> =
 	const { page, limit, categories } = data
 	const offset = (page - 1) * limit
 
-	const { rows }: { rows: Product[] } = await dbPool.query(
+	const { rows: products }: { rows: Product[] } = await dbPool.query(
 		`
 				SELECT *
 				FROM products
@@ -39,5 +40,5 @@ export const getProducts = async (params: URLSearchParams): Promise<Product[]> =
 		[limit, offset, ...(categories?.length ? [categories] : [])]
 	)
 
-	return rows
+	return json({ products })
 }

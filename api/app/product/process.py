@@ -1,12 +1,16 @@
 import re
 
 import pandas as pd
+from sqlalchemy import text
 from app.core.logger import logger
 from app.db.session import engine
+from app.product.download import save_path
+
+sheet_name = "Spotlight ETP List"
 
 
 def _clean_data(file_path: str) -> pd.DataFrame:
-    df = pd.read_excel(file_path, sheet_name="Spotlight ETP List")
+    df = pd.read_excel(io=file_path, sheet_name=sheet_name)
 
     df = df.drop(df.columns[0], axis=1)
 
@@ -69,6 +73,7 @@ def _clean_data(file_path: str) -> pd.DataFrame:
 
     # reset index
     df = df.reset_index(drop=True)
+    df = df.reset_index(names="id")
 
     # rename columns to psql friendly
     df.columns = [to_psql_syntax(c) for c in df.columns]
@@ -106,6 +111,9 @@ async def _insert_df(df: pd.DataFrame):
                 df[["category"]].drop_duplicates().rename(columns={"category": "name"})
             )
 
+            categories_df = categories_df.reset_index(drop=True)
+            categories_df = categories_df.reset_index(names="id")
+
             await conn.run_sync(
                 lambda sync_conn: categories_df.to_sql(
                     name="product_categories",
@@ -114,21 +122,26 @@ async def _insert_df(df: pd.DataFrame):
                     index=False,
                 )
             )
+
+            await conn.execute(
+                text(
+                    """
+                INSERT INTO product_metadata (key, last_update)
+                VALUES ('global', NOW())
+                ON CONFLICT (key)
+                DO UPDATE SET last_update = EXCLUDED.last_update
+                """
+                )
+            )
+
     except Exception as e:
         logger.error("Failed to insert")
         raise e
 
 
-async def process(file_path: str):
+async def process():
     try:
-        df = _clean_data(str(file_path))
-
-        # print(df.dtypes)
-        # print(df.head())
-        # print(df.isnull().sum())
-
-        await _insert_df(df)
-
+        await _insert_df(_clean_data(save_path))
     except Exception as e:
         logger.error(f"Failed to process data")
         raise e

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import favicon from '$lib/assets/favicon.svg'
-	import { APP_DATA } from '$lib/constants/app-data'
+	import { APP_DATA } from '$lib/constants'
 	import { Toaster } from 'svelte-french-toast'
 	import '../app.css'
 

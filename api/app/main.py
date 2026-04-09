@@ -1,7 +1,9 @@
 from contextlib import asynccontextmanager
 
+from fastapi.responses import JSONResponse
+
+
 from app.core.logger import logger
-from app.schemas.error import ErrorResponse
 from app.db.session import init_db
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
@@ -47,9 +49,9 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 @app.exception_handler(Exception)
 async def global_exception_handler(_: Request, exc: Exception):
     logger.error(exc)
-    raise ErrorResponse(
+    return JSONResponse(
         status_code=500,
-        message="Internal Server Error",
+        content={"detail": str(exc)},
     )
 
 
