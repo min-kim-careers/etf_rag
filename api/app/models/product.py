@@ -2,6 +2,8 @@ from datetime import datetime
 
 from sqlalchemy import DateTime, String, Numeric
 from sqlalchemy.orm import Mapped, mapped_column
+from pgvector.sqlalchemy import Vector
+
 
 from app.db.base import Base
 
@@ -61,3 +63,5 @@ class ProductDB(Base):
     twelve_m_chess_funds_inflow_outflow_m: Mapped[float | None] = mapped_column(
         Numeric, name="12m_chess_funds_inflow_outflow_m"
     )
+
+    embedding: Mapped[list[float] | None] = mapped_column(Vector(768))

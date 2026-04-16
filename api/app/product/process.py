@@ -1,16 +1,19 @@
 import re
 
 import pandas as pd
-from sqlalchemy import text
+from sqlalchemy import insert, text
 from app.core.logger import logger
 from app.db.session import engine
+from app.models.product import ProductDB
 from app.product.download import save_path
+from app.product.embedding import get_embedding_texts, get_embeddings
 
-sheet_name = "Spotlight ETP List"
+
+SHEET_NAME = "Spotlight ETP List"
 
 
 def _clean_data(file_path: str) -> pd.DataFrame:
-    df = pd.read_excel(io=file_path, sheet_name=sheet_name)
+    df = pd.read_excel(io=file_path, sheet_name=SHEET_NAME)
 
     df = df.drop(df.columns[0], axis=1)
 
@@ -37,7 +40,7 @@ def _clean_data(file_path: str) -> pd.DataFrame:
         # after header index located
         elif header_index is not None:
             # if final index, break
-            if pd.isna(first_col):
+            if "Australian Indices" in str(first_col):
                 last_index = i
                 break
 
@@ -79,18 +82,17 @@ def _clean_data(file_path: str) -> pd.DataFrame:
     df.columns = [to_psql_syntax(c) for c in df.columns]
 
     # Convert object columns to numeric where possible
+    str_cols = ["asx_code", "type", "issuer", "fund_name", "category"]
     for col in df.columns:
-        if df[col].dtype == "object" and col not in [
-            "asx_code",
-            "type",
-            "issuer",
-            "fund_name",
-            "category",
-        ]:
+        if df[col].dtype == "object" and col not in str_cols:
             df[col] = pd.to_numeric(df[col], errors="coerce")
 
     # replace all cells with 'NaN' string with proper NaN
-    df = df.where(df.notna(), other=None)  # type: ignore
+    df = df.astype(object).where(df.notna(), None)
+
+    # embedding vectors to all rows
+    embedding_texts = get_embedding_texts(df, str_cols)
+    df["embedding"] = get_embeddings(embedding_texts)
 
     return df
 
@@ -98,14 +100,20 @@ def _clean_data(file_path: str) -> pd.DataFrame:
 async def _insert_df(df: pd.DataFrame):
     try:
         async with engine.begin() as conn:
-            await conn.run_sync(
-                lambda sync_conn: df.to_sql(
-                    name="products",
-                    con=sync_conn,
-                    if_exists="replace",
-                    index=False,
-                )
-            )
+            await conn.execute(text("TRUNCATE TABLE products"))
+
+            records = df.to_dict(orient="records")
+
+            await conn.execute(insert(ProductDB), records)
+
+            # await conn.run_sync(
+            #     lambda sync_conn: df.to_sql(
+            #         name="products",
+            #         con=sync_conn,
+            #         if_exists="append",
+            #         index=False,
+            #     )
+            # )
 
             categories_df = (
                 df[["category"]].drop_duplicates().rename(columns={"category": "name"})
@@ -126,11 +134,11 @@ async def _insert_df(df: pd.DataFrame):
             await conn.execute(
                 text(
                     """
-                INSERT INTO product_metadata (key, last_update)
-                VALUES ('global', NOW())
-                ON CONFLICT (key)
-                DO UPDATE SET last_update = EXCLUDED.last_update
-                """
+                    INSERT INTO product_metadata (key, last_update)
+                    VALUES ('global', NOW())
+                    ON CONFLICT (key)
+                    DO UPDATE SET last_update = EXCLUDED.last_update
+                    """
                 )
             )
 

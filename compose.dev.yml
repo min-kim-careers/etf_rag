@@ -35,6 +35,17 @@ services:
     networks:
       - backend-network
 
+  etf_dev_embedding-service:
+    container_name: etf_dev_embedding-container
+    restart: always
+    image: ollama/ollama:latest
+    volumes:
+      - embedding_data:/root/.ollama
+      - ./embedding/entrypoint.sh:/entrypoint.sh
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
+    networks:
+      - backend-network
+
   etf_dev_web-service:
     container_name: etf_dev_web-container
     restart: always
@@ -45,12 +56,20 @@ services:
       args:
         - PORT=5173
     environment:
-      - GEMINI_API_KEY=REDACTED
-      - BETTER_AUTH_SECRET=REDACTED
-      - BETTER_AUTH_URL=http://192.168.8.103:8083
       # Refer to DB service authentication details
       - DB_URL=postgres://dbuser:dbpass@etf_dev_db-service:5432/dbname
+
+      - GEMINI_API_KEY=REDACTED
+
+      - BETTER_AUTH_SECRET=REDACTED
+      - BETTER_AUTH_URL=http://192.168.8.103:8083
+
       - API_URL=http://etf_dev_api-service:8000
+      - EMBEDDING_URL=http://etf_dev_embedding-service:11434
+
+      # Home PC
+      - LOCAL_LLM_URL=http://192.168.8.170:9090
+
       - PUBLIC_APP_TITLE=ETF
     volumes:
       - ./web:/app
@@ -75,6 +94,7 @@ services:
       - gateway-network
 
 volumes:
+  embedding_data:
   db-data:
   venv:
   pip:

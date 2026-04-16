@@ -1,11 +1,11 @@
 <script lang="ts">
+	import TypingIndicator from '$lib/components/typing-indicator.svelte'
+	import WelcomeToast from '$lib/components/welcome-toast.svelte'
 	import { cn } from '$lib/shadcn/utils'
 	import type { Message } from '$lib/types/message'
 	import type { Provider } from '$lib/utils/langchain/config'
-	import WelcomeToast from '$routes/_components/welcome-toast.svelte'
 	import SvelteMarkdown from '@humanspeak/svelte-markdown'
 	import toast from 'svelte-french-toast'
-	import { SyncLoader } from 'svelte-loading-spinners'
 
 	let { data }: { data: { username: string; signedIn: string } } = $props()
 
@@ -16,7 +16,7 @@
 	})
 
 	let messages: Message[] = $state([])
-	let responding = $state(false)
+	let loading = $state(false)
 	let prompt = $state('')
 	let provider: Provider = $state('local')
 
@@ -30,8 +30,8 @@
 		prompt = ''
 
 		try {
-			responding = true
-			const res = await fetch('/_api/chat/stream', {
+			loading = true
+			const res = await fetch('/api/chat/stream', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ prompt: _prompt })
@@ -42,15 +42,15 @@
 			}
 
 			const reader = res.body.pipeThrough(new TextDecoderStream()).getReader()
-			responding = false
 
 			while (true) {
 				const { value, done } = await reader.read()
 				if (done) break
 
-				if (value.startsWith('__STATUS__:')) {
-					provider = value.replace('__STATUS__:', '').trim() as Provider
+				if (value.startsWith('__PROVIDER__:')) {
+					provider = value.replace('__PROVIDER__:', '').trim() as Provider
 				} else {
+					if (loading) loading = false
 					messages[messages.length - 1].content += value
 				}
 			}
@@ -58,7 +58,7 @@
 			toast('Something went wrong.')
 			console.error(error)
 		} finally {
-			responding = false
+			loading = false
 		}
 	}
 </script>
@@ -83,8 +83,8 @@
 				</li>
 			{/if}
 		{/each}
-		{#if responding}
-			<li class="px-4 py-2"><SyncLoader size={40} color="#000000" /></li>
+		{#if loading}
+			<li class="px-4 py-2"><TypingIndicator /></li>
 		{/if}
 	</ul>
 
@@ -93,11 +93,11 @@
 			bind:value={prompt}
 			type="text"
 			class="w-full rounded border p-2 disabled:bg-muted"
-			disabled={responding}
+			disabled={loading}
 			placeholder="ask something.."
 		/>
 		<button
-			disabled={responding}
+			disabled={loading}
 			type="submit"
 			class="w-[100px] rounded border p-2 disabled:bg-muted disabled:text-muted-foreground"
 			>send</button

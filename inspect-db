@@ -1,0 +1,3 @@
+#!/bin/bash
+
+docker exec -it etf_dev_db-container psql -U dbuser -d dbname

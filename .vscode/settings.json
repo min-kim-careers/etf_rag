@@ -20,5 +20,8 @@
     "**/.DS_Store": true,
     "**/Thumbs.db": true,
     "**/.svelte-kit": true
+  },
+  "[typescript]": {
+    "js/ts.preferences.importModuleSpecifier": "non-relative"
   }
 }

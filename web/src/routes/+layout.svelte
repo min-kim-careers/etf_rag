@@ -1,8 +1,8 @@
 <script lang="ts">
 	import favicon from '$lib/assets/favicon.svg'
 	import { APP_DATA } from '$lib/constants'
+	import '$src/app.css'
 	import { Toaster } from 'svelte-french-toast'
-	import '../app.css'
 
 	let { children } = $props()
 </script>

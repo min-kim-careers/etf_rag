@@ -3,13 +3,6 @@
 	import { APP_ROUTES } from '$lib/constants'
 	import toast from 'svelte-french-toast'
 
-	type Params = {
-		page: string
-		limit: string
-		categories: string
-	}
-	let categories = $state('')
-
 	const { username }: { username: string } = $props()
 </script>
 
@@ -20,7 +13,7 @@
 		class="cursor-pointer"
 		onclick={async () => {
 			try {
-				await fetch('/_api/auth/signout', { method: 'POST' })
+				await fetch('/api/auth/signout', { method: 'POST' })
 				toast('Signed out successfully.')
 				goto(APP_ROUTES.auth.login)
 			} catch (error) {

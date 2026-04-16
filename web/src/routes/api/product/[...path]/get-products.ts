@@ -1,7 +1,6 @@
 import { parseSearchParams } from '$lib/helpers/parse-search-params'
 import type { Product } from '$lib/types/product'
 import { dbPool } from '$lib/utils/db/config'
-import { json } from '@sveltejs/kit'
 import z from 'zod'
 
 const ParamsSchema = z.object({
@@ -40,5 +39,5 @@ export const getProducts = async (params: URLSearchParams): Promise<any> => {
 		[limit, offset, ...(categories?.length ? [categories] : [])]
 	)
 
-	return json({ products })
+	return products
 }
