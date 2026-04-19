@@ -9,7 +9,7 @@
 		<Header {...data} />
 	</div>
 
-	<div class="flex h-[480px] w-[360px] flex-col items-center justify-center rounded border">
+	<div class="flex h-[480px] w-[360px] flex-col justify-center rounded border">
 		{@render children?.()}
 	</div>
 

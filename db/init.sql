@@ -8,6 +8,7 @@ CREATE TABLE products (
     issuer TEXT,
     fund_name TEXT NOT NULL,
     category TEXT NOT NULL,
+    region TEXT,
 
     mer_pa NUMERIC,
     fum_m NUMERIC,

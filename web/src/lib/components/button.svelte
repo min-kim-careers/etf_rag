@@ -2,13 +2,13 @@
 	import { cn } from '$lib/shadcn/utils'
 	import type { HTMLButtonAttributes } from 'svelte/elements'
 
-	let { children, ...restProps }: HTMLButtonAttributes & Record<string, any> = $props()
+	let { children, variant, ...restProps }: HTMLButtonAttributes & Record<string, any> = $props()
 </script>
 
 <button
 	{...restProps}
 	class={cn(
-		'cursor-pointer rounded border bg-secondary p-1 hover:bg-transparent',
+		'cursor-pointer',
 		restProps.class,
 		restProps.disabled && 'cursor-not-allowed opacity-50'
 	)}

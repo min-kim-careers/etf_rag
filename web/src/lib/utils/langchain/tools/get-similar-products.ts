@@ -8,8 +8,6 @@ export const getSimilarProductsTool = tool(
 	async ({ text, columns }) => {
 		try {
 			const embedding = await embedQuery(text)
-			console.log('embedding ok, length:', embedding.length)
-
 			const cols = columns.map((c) => `"${c}"`).join(', ')
 			const { rows: products } = await dbPool.query(
 				`SELECT ${cols} FROM products ORDER BY embedding <=> $1::vector LIMIT 10`,

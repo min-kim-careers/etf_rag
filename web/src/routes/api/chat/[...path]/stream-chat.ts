@@ -1,10 +1,10 @@
+import type { Message } from '$lib/types/message'
 import { getEventStream, providerList } from '$lib/utils/langchain/config'
 
-const STREAM_CHUNK_SIZE = 20
+// response streaming speed, higher = faster
+const STREAM_CHUNK_SIZE = 10
 
-export const streamChat = async (request: Request) => {
-	const { prompt } = await request.json()
-
+export const streamChat = async (messages: Message[]) => {
 	const encoder = new TextEncoder()
 	const abort = new AbortController()
 
@@ -20,7 +20,8 @@ export const streamChat = async (request: Request) => {
 				try {
 					streamActiveProvider(provider)
 
-					const eventStream = getEventStream(prompt, provider, abort.signal)
+					const eventStream = getEventStream(messages, provider, abort.signal)
+
 					for await (const event of eventStream) {
 						if (event.event !== 'on_chat_model_stream') continue
 						const content = event.data?.chunk?.content

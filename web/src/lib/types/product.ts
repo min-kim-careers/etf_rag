@@ -4,6 +4,7 @@ export type Product = {
 	issuer: string | null
 	fundName: string
 	category: string
+	region: string
 	merPa: number | null
 	fumM: number | null
 	fumMChange: number | null

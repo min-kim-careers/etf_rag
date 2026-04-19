@@ -1,5 +1,6 @@
 export const PRODUCT_COLUMNS = [
 	'embedding',
+	'region',
 	'3_year_total_return_ann',
 	'5_year_total_return_ann',
 	'12m_funds_inflow_outflow_m',

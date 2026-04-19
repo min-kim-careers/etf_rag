@@ -15,7 +15,7 @@ save_folder.mkdir(parents=True, exist_ok=True)
 save_path = save_folder / "latest.xlsx"
 
 
-def download():
+def download_asx_report():
     try:
         logger.info("Starting download..")
         with requests.get(url=asx_etf_url, stream=True) as r:

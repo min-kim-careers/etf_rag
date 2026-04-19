@@ -31,6 +31,8 @@ class ProductDB(Base):
     issuer: Mapped[str | None] = mapped_column(String)
     fund_name: Mapped[str] = mapped_column(String)
     category: Mapped[str] = mapped_column(String)
+    region: Mapped[str] = mapped_column(String)
+
     mer_pa: Mapped[float | None] = mapped_column(Numeric)
     fum_m: Mapped[float | None] = mapped_column(Numeric)
     fum_m_change: Mapped[float | None] = mapped_column(Numeric)

@@ -1,3 +1,5 @@
+import json
+from pathlib import Path
 import re
 
 import pandas as pd
@@ -5,14 +7,28 @@ from sqlalchemy import insert, text
 from app.core.logger import logger
 from app.db.session import engine
 from app.models.product import ProductDB
-from app.product.download import save_path
+from app.product.classification import classify_region
+from app.product.download import save_path as latest_data_path
 from app.product.embedding import get_embedding_texts, get_embeddings
 
 
 SHEET_NAME = "Spotlight ETP List"
 
+save_folder = (Path(__file__).parent / ".." / "data").resolve()
+save_folder.mkdir(parents=True, exist_ok=True)
 
-def _clean_data(file_path: str) -> pd.DataFrame:
+embedding_save_path = save_folder / "initial_embeddings.json"
+
+
+def _to_psql_syntax(s):
+    s = str(s).strip().lower()
+    s = re.sub(r"[^\w\s]", "", s)
+    s = re.sub(r"\s+", "_", s)
+    s = s.strip("_")
+    return s
+
+
+def clean_data(file_path: str) -> pd.DataFrame:
     df = pd.read_excel(io=file_path, sheet_name=SHEET_NAME)
 
     df = df.drop(df.columns[0], axis=1)
@@ -21,13 +37,6 @@ def _clean_data(file_path: str) -> pd.DataFrame:
     last_index = None
     category = None
     category_indices = []
-
-    def to_psql_syntax(s):
-        s = str(s).strip().lower()
-        s = re.sub(r"[^\w\s]", "", s)
-        s = re.sub(r"\s+", "_", s)
-        s = s.strip("_")
-        return s
 
     for i, row in df.iterrows():
         first_col = row.iloc[0]
@@ -51,7 +60,7 @@ def _clean_data(file_path: str) -> pd.DataFrame:
                 continue
 
             # if actual row, append category column to row
-            df.loc[i, "category"] = to_psql_syntax(category)
+            df.loc[i, "category"] = _to_psql_syntax(category)
 
     # get record chunk
     df = df.iloc[header_index:last_index]
@@ -79,7 +88,7 @@ def _clean_data(file_path: str) -> pd.DataFrame:
     df = df.reset_index(names="id")
 
     # rename columns to psql friendly
-    df.columns = [to_psql_syntax(c) for c in df.columns]
+    df.columns = [_to_psql_syntax(c) for c in df.columns]
 
     # Convert object columns to numeric where possible
     str_cols = ["asx_code", "type", "issuer", "fund_name", "category"]
@@ -90,57 +99,73 @@ def _clean_data(file_path: str) -> pd.DataFrame:
     # replace all cells with 'NaN' string with proper NaN
     df = df.astype(object).where(df.notna(), None)
 
-    # embedding vectors to all rows
-    embedding_texts = get_embedding_texts(df, str_cols)
-    df["embedding"] = get_embeddings(embedding_texts)
+    df = df.iloc[:5]
+
+    # get initial embeddings with default columns above
+    try:
+        with open(embedding_save_path, "r") as f:
+            initial_embeddings = json.load(f)
+
+    except FileNotFoundError:
+        initial_embeddings = get_embeddings(get_embedding_texts(df, str_cols))
+
+        with open(embedding_save_path, "w") as f:
+            json.dump(initial_embeddings, f)
+
+    # classify region with initial embeddings
+    df["region"] = [classify_region(vec) for vec in initial_embeddings]
+
+    # recalculate embeddings including the new region column
+    df["embedding"] = get_embeddings(get_embedding_texts(df, str_cols + ["region"]))
 
     return df
 
 
-async def _insert_df(df: pd.DataFrame):
-    try:
-        async with engine.begin() as conn:
-            await conn.execute(text("TRUNCATE TABLE products"))
+async def insert_df(df: pd.DataFrame):
+    async def update_products():
+        await conn.execute(text("TRUNCATE TABLE products"))
+        records = df.to_dict(orient="records")
+        await conn.execute(insert(ProductDB), records)
 
-            records = df.to_dict(orient="records")
+    def build_categories_df():
+        categories_df = (
+            df[["category"]].drop_duplicates().rename(columns={"category": "name"})
+        )
+        categories_df = categories_df.reset_index(drop=True)
+        categories_df = categories_df.reset_index(names="id")
+        return categories_df
 
-            await conn.execute(insert(ProductDB), records)
-
-            # await conn.run_sync(
-            #     lambda sync_conn: df.to_sql(
-            #         name="products",
-            #         con=sync_conn,
-            #         if_exists="append",
-            #         index=False,
-            #     )
-            # )
-
-            categories_df = (
-                df[["category"]].drop_duplicates().rename(columns={"category": "name"})
+    async def insert_categories(categories_df: pd.DataFrame):
+        await conn.run_sync(
+            lambda sync_conn: categories_df.to_sql(
+                name="product_categories",
+                con=sync_conn,
+                if_exists="replace",
+                index=False,
             )
+        )
 
-            categories_df = categories_df.reset_index(drop=True)
-            categories_df = categories_df.reset_index(names="id")
-
-            await conn.run_sync(
-                lambda sync_conn: categories_df.to_sql(
-                    name="product_categories",
-                    con=sync_conn,
-                    if_exists="replace",
-                    index=False,
-                )
-            )
-
-            await conn.execute(
-                text(
-                    """
+    async def update_metadata():
+        await conn.execute(
+            text(
+                """
                     INSERT INTO product_metadata (key, last_update)
                     VALUES ('global', NOW())
                     ON CONFLICT (key)
                     DO UPDATE SET last_update = EXCLUDED.last_update
                     """
-                )
             )
+        )
+
+    try:
+        async with engine.begin() as conn:
+            await update_products()
+
+            categories_df = build_categories_df()
+
+            await insert_categories(categories_df)
+
+            await update_metadata()
 
     except Exception as e:
         logger.error("Failed to insert")
@@ -149,7 +174,9 @@ async def _insert_df(df: pd.DataFrame):
 
 async def process():
     try:
-        await _insert_df(_clean_data(save_path))
+        cleaned_data = clean_data(latest_data_path)
+        return
+        await insert_df(cleaned_data)
     except Exception as e:
         logger.error(f"Failed to process data")
         raise e

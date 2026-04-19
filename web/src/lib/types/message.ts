@@ -1,4 +1,4 @@
-type Role = 'user' | 'agent'
+type Role = 'user' | 'assistant'
 
 export type Message = {
 	role: Role
