@@ -1,17 +1,17 @@
 import { GEMINI_API_KEY, LOCAL_LLM_URL } from '$env/static/private'
-import { getProductDetailsTool } from '$lib/utils/langchain/tools/get-product-details'
-import { getSimilarProductsTool } from '$lib/utils/langchain/tools/get-similar-products'
+import { getProductsByFilter } from '$lib/utils/langchain/tools/get-products-by-filter'
+import { getProductsBySemantics } from '$lib/utils/langchain/tools/get-products-by-semantics'
 import { ChatGoogle } from '@langchain/google'
 import { ChatOpenAI } from '@langchain/openai'
 import { createAgent } from 'langchain'
-import { getProductCategoriesTool } from './tools/get-product-categories'
 
 const CLOUD_MODEL = 'gemini-2.0-flash-lite'
 
-const SYSTEM_PROMPT =
-	'You are an ETF assistant. When asked to list or find ETFs, always call the available tools immediately. Never ask clarifying questions before calling a tool.'
+const SYSTEM_PROMPT = `
+	You are an ETF assistant. When asked to list or find ETFs, always call the available tools immediately. Never ask clarifying questions before calling a tool. Output results as tables.
+	`
 
-const TOOLS = [getProductCategoriesTool, getSimilarProductsTool, getProductDetailsTool]
+const TOOLS = [getProductsBySemantics, getProductsByFilter]
 
 export const cloudAgent = createAgent({
 	model: new ChatGoogle({

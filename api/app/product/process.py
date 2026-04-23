@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 import re
 
@@ -99,30 +98,19 @@ def clean_data(file_path: str) -> pd.DataFrame:
     # replace all cells with 'NaN' string with proper NaN
     df = df.astype(object).where(df.notna(), None)
 
-    df = df.iloc[:5]
-
-    # get initial embeddings with default columns above
-    try:
-        with open(embedding_save_path, "r") as f:
-            initial_embeddings = json.load(f)
-
-    except FileNotFoundError:
-        initial_embeddings = get_embeddings(get_embedding_texts(df, str_cols))
-
-        with open(embedding_save_path, "w") as f:
-            json.dump(initial_embeddings, f)
-
-    # classify region with initial embeddings
-    df["region"] = [classify_region(vec) for vec in initial_embeddings]
+    df["region"] = df.apply(
+        lambda row: classify_region(row),
+        axis=1,
+    )
 
     # recalculate embeddings including the new region column
-    df["embedding"] = get_embeddings(get_embedding_texts(df, str_cols + ["region"]))
+    df["embedding"] = get_embeddings(get_embedding_texts(df, df.columns.to_list()))
 
     return df
 
 
 async def insert_df(df: pd.DataFrame):
-    async def update_products():
+    async def update_products(conn):
         await conn.execute(text("TRUNCATE TABLE products"))
         records = df.to_dict(orient="records")
         await conn.execute(insert(ProductDB), records)
@@ -135,7 +123,7 @@ async def insert_df(df: pd.DataFrame):
         categories_df = categories_df.reset_index(names="id")
         return categories_df
 
-    async def insert_categories(categories_df: pd.DataFrame):
+    async def insert_categories(conn, categories_df: pd.DataFrame):
         await conn.run_sync(
             lambda sync_conn: categories_df.to_sql(
                 name="product_categories",
@@ -145,7 +133,7 @@ async def insert_df(df: pd.DataFrame):
             )
         )
 
-    async def update_metadata():
+    async def update_metadata(conn):
         await conn.execute(
             text(
                 """
@@ -159,13 +147,11 @@ async def insert_df(df: pd.DataFrame):
 
     try:
         async with engine.begin() as conn:
-            await update_products()
+            await update_products(conn)
 
-            categories_df = build_categories_df()
+            await insert_categories(conn, build_categories_df())
 
-            await insert_categories(categories_df)
-
-            await update_metadata()
+            await update_metadata(conn)
 
     except Exception as e:
         logger.error("Failed to insert")
@@ -174,9 +160,7 @@ async def insert_df(df: pd.DataFrame):
 
 async def process():
     try:
-        cleaned_data = clean_data(latest_data_path)
-        return
-        await insert_df(cleaned_data)
+        await insert_df(clean_data(latest_data_path))
     except Exception as e:
         logger.error(f"Failed to process data")
         raise e

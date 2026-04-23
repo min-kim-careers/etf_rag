@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Button from '$lib/components/button.svelte'
 	import LoadingText from '$lib/components/loading-text.svelte'
+	import { API_ROUTES } from '$routes/api/api_routes'
 	import { onMount } from 'svelte'
 	import toast from 'svelte-french-toast'
 
@@ -32,7 +33,7 @@
 		checking = true
 
 		try {
-			const res = await fetch('/api/chat/ping')
+			const res = await fetch(API_ROUTES.chat.ping)
 			const data = await res.json()
 			pingTries += 1
 

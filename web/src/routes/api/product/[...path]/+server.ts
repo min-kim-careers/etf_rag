@@ -1,16 +1,15 @@
+import { PRODUCT_CATEGORIES } from '$lib/constants/product-categories'
 import { json } from '@sveltejs/kit'
-import { getProductCategories } from './get-product-categories'
 import { getProducts } from './get-products'
 
 export const GET = async ({ params, url }): Promise<any> => {
 	switch (params.path) {
-		case '':
+		case 'query':
 			const products = await getProducts(url.searchParams)
 			return json({ products })
 
 		case 'categories':
-			const categories = await getProductCategories()
-			return json({ categories })
+			return json({ categories: PRODUCT_CATEGORIES })
 
 		default:
 			break

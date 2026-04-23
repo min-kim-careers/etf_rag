@@ -1,11 +1,13 @@
 <script lang="ts">
 	import Button from '$lib/components/button.svelte'
+	import Table from '$lib/components/svelte-markdown/table.svelte'
 	import TypingIndicator from '$lib/components/typing-indicator.svelte'
 	import WelcomeToast from '$lib/components/welcome-toast.svelte'
 	import { cn } from '$lib/shadcn/utils'
 	import type { Message } from '$lib/types/message'
 	import type { Provider } from '$lib/utils/langchain/config'
 	import StatusBar from '$routes/(app)/(home)/status-bar.svelte'
+	import { API_ROUTES } from '$routes/api/api_routes'
 	import SvelteMarkdown from '@humanspeak/svelte-markdown'
 	import { onMount, tick } from 'svelte'
 	import toast from 'svelte-french-toast'
@@ -52,7 +54,7 @@
 			thinking = true
 			await tick()
 			goToBottom()
-			const res = await fetch('/api/chat/stream', {
+			const res = await fetch(API_ROUTES.chat.stream, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ messages })
@@ -116,13 +118,16 @@
 				<div class={cn('flex w-full', m.role === 'user' ? 'justify-end' : 'justify-start')}>
 					<div
 						class={cn(
-							'rounded border p-2 leading-relaxed [&_hr]:my-3 [&_li]:mb-1 [&_p]:mb-2',
-							m.role === 'user'
-								? 'bg-muted'
-								: 'overflow-x-auto bg-background [&_table]:w-screen [&_table]:border-collapse [&_td]:px-3 [&_td]:py-1 [&_th]:px-3 [&_th]:py-1'
+							'rounded border p-2 leading-relaxed  [&_hr]:my-3 [&_li]:mb-1 [&_p]:mb-2',
+							m.role === 'user' ? 'bg-muted' : 'overflow-x-auto bg-background'
 						)}
 					>
-						<SvelteMarkdown source={m.content} />
+						<SvelteMarkdown
+							source={m.content}
+							renderers={{
+								table: Table
+							}}
+						/>
 					</div>
 				</div>
 			{/if}

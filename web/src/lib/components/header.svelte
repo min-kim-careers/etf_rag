@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation'
-	import { APP_ROUTES } from '$lib/constants'
+	import { APP_ROUTES } from '$lib/constants/app_routes'
+	import { API_ROUTES } from '$routes/api/api_routes'
 	import toast from 'svelte-french-toast'
 
 	const { username }: { username: string } = $props()
@@ -13,7 +14,7 @@
 		class="cursor-pointer"
 		onclick={async () => {
 			try {
-				await fetch('/api/auth/signout', { method: 'POST' })
+				await fetch(API_ROUTES.auth.signout, { method: 'POST' })
 				toast('Signed out successfully.')
 				goto(APP_ROUTES.auth.login)
 			} catch (error) {

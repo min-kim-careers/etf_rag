@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Button from '$lib/components/button.svelte'
-	import { APP_DATA, APP_ROUTES } from '$lib/constants'
+	import { APP_DATA } from '$lib/constants/app_data'
+	import { APP_ROUTES } from '$lib/constants/app_routes'
 	import toast from 'svelte-french-toast'
 	import { superForm, type SuperValidated } from 'sveltekit-superforms'
 

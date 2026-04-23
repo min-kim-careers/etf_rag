@@ -1,5 +1,5 @@
 import { getRequestEvent } from '$app/server'
-import { dbPool } from '$lib/utils/db/config'
+import { dbPool } from '$lib/utils/db/pg'
 import { betterAuth } from 'better-auth'
 import { sveltekitCookies } from 'better-auth/svelte-kit'
 

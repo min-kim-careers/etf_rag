@@ -1,0 +1,22 @@
+export const PRODUCT_CATEGORIES = [
+	'equity_australia',
+	'equity_australia_smallmid_cap',
+	'equity_australia_sectors',
+	'equity_australia_strategy',
+	'equity_global',
+	'equity_asia',
+	'equity_emerging_markets',
+	'equity_global_sectors',
+	'equity_global_strategy',
+	'equity_infrastructure',
+	'property_australia',
+	'property_global',
+	'fixed_income_australia_dollar',
+	'fixed_income_global',
+	'fixed_income_fixed_term',
+	'cash',
+	'mixed_asset',
+	'currency',
+	'commodity',
+	'crypto_assets'
+] as const

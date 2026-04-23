@@ -1,4 +1,4 @@
-import { APP_ROUTES } from '$lib/constants'
+import { APP_ROUTES } from '$lib/constants/app_routes'
 import { getFlash, setFlash } from '$lib/helpers/flash-helpers'
 import { auth } from '$lib/utils/better-auth/server'
 import { fail, redirect, type Actions } from '@sveltejs/kit'

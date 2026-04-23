@@ -1,6 +1,5 @@
 import { parseSearchParams } from '$lib/helpers/parse-search-params'
-import type { Product } from '$lib/types/product'
-import { dbPool } from '$lib/utils/db/config'
+import { sql } from '$lib/utils/db/postgres'
 import z from 'zod'
 
 const ParamsSchema = z.object({
@@ -28,16 +27,14 @@ export const getProducts = async (params: URLSearchParams): Promise<any> => {
 	const { page, limit, categories } = data
 	const offset = (page - 1) * limit
 
-	const { rows: products }: { rows: Product[] } = await dbPool.query(
+	const products = await sql`
+		SELECT *
+		FROM products
+		WHERE
+		${categories?.length ? `category = ANY(${sql(categories)})` : 'TRUE'}
+		LIMIT ${limit}
+		OFFSET ${offset}
 		`
-				SELECT *
-				FROM products
-				${categories?.length ? `WHERE category = ANY($3)` : ''}
-				LIMIT $1
-				OFFSET $2
-				`,
-		[limit, offset, ...(categories?.length ? [categories] : [])]
-	)
 
 	return products
 }
