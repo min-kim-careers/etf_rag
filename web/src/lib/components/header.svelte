@@ -1,25 +1,26 @@
 <script lang="ts">
 	import { goto } from '$app/navigation'
 	import { APP_ROUTES } from '$lib/constants/app_routes'
+	import Button from '$lib/shadcn/components/ui/button/button.svelte'
 	import { API_ROUTES } from '$routes/api/api_routes'
 	import toast from 'svelte-french-toast'
 
 	const { username }: { username: string } = $props()
 </script>
 
-<div class="mx-4 flex justify-between text-sm">
+<div class="mx-4 flex items-center justify-between text-sm">
 	<div class="">{username}</div>
 
-	<button
-		class="cursor-pointer"
+	<Button
+		variant="ghost"
 		onclick={async () => {
 			try {
 				await fetch(API_ROUTES.auth.signout, { method: 'POST' })
-				toast('Signed out successfully.')
 				goto(APP_ROUTES.auth.login)
+				toast('Signed out successfully.')
 			} catch (error) {
 				toast.error('Something went wrong.')
 			}
-		}}>Sign out</button
+		}}>Sign out</Button
 	>
 </div>

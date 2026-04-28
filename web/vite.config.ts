@@ -14,9 +14,6 @@ export default defineConfig({
 	},
 	preview: {
 		port,
-		allowedHosts: [
-			'localhost',
-			...(process.env.NODE_ENV === 'production' && process.env.HOST ? [process.env.HOST] : [])
-		]
+		allowedHosts: true
 	}
 })

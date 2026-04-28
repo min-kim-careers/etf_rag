@@ -1,9 +1,9 @@
-import { EMBEDDING_URL } from '$env/static/private'
+import { ENV } from '$lib/constants/env'
 import { OllamaEmbeddings } from '@langchain/ollama'
 
 const embeddings = new OllamaEmbeddings({
 	model: 'nomic-embed-text',
-	baseUrl: EMBEDDING_URL
+	baseUrl: ENV.OLLAMA_URL
 })
 
 export async function embedQuery(text: string): Promise<number[]> {

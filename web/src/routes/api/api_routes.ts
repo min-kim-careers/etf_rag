@@ -4,7 +4,8 @@ export const API_ROUTES = {
 	},
 	chat: {
 		stream: '/api/chat/stream',
-		ping: '/api/chat/ping'
+		ping: '/api/chat/ping',
+		limit: '/api/chat/limit'
 	},
 	product: {
 		query: '/api/product/query',

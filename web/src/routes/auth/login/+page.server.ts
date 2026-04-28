@@ -21,13 +21,13 @@ export const load = async ({ cookies }) => {
 
 export const actions: Actions = {
 	default: async ({ request, cookies }) => {
-		const form = await superValidate(request, zod4(schema))
-
-		if (!form.valid) {
-			return fail(400, { form })
-		}
-
+		let form
 		try {
+			form = await superValidate(request, zod4(schema))
+
+			if (!form.valid) {
+				return fail(400, { form })
+			}
 			await auth.api.signInEmail({
 				body: {
 					email: form.data.email,
@@ -37,8 +37,11 @@ export const actions: Actions = {
 
 			setFlash({ cookies, path: APP_ROUTES.home, key: 'signed-in', value: '1' })
 		} catch (error) {
-			setError(form, 'password', 'Invalid email or password')
-			return { form }
+			if (form) {
+				setError(form, 'password', 'Invalid email or password')
+				return { form }
+			}
+			return fail(400)
 		}
 
 		throw redirect(303, APP_ROUTES.home)

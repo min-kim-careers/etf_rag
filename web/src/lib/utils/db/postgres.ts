@@ -1,4 +1,4 @@
-import { DB_URL } from '$env/static/private'
+import { ENV } from '$lib/constants/env'
 import postgres from 'postgres'
 
-export const sql = postgres(DB_URL)
+export const sql = postgres(ENV.DB_URL)

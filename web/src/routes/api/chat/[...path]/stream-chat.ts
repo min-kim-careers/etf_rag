@@ -1,56 +1,67 @@
 import type { Message } from '$lib/types/message'
-import { getEventStream, providerList } from '$lib/utils/langchain/config'
+import { getEventStream, type Provider } from '$lib/utils/langchain/config'
 
 // response streaming speed, higher = faster
 const STREAM_CHUNK_SIZE = 10
+const CONNECTION_TIMEOUT = 1000
 
-export const streamChat = async (messages: Message[]) => {
+export type Meta = Partial<{
+	provider: Provider
+	remainingLimit: number
+	error?: 'server_offline'
+}>
+
+export const streamChat = async (
+	messages: Message[],
+	remainingLimit: number,
+	provider: Provider
+) => {
 	const encoder = new TextEncoder()
 	const abort = new AbortController()
 
-	const body = new ReadableStream({
+	return new ReadableStream({
 		async start(controller) {
-			for (const provider of providerList) {
-				if (provider === 'cloud') continue
-
-				const streamActiveProvider = (provider: string) => {
-					controller.enqueue(encoder.encode(`__PROVIDER__:${provider}\n`))
-				}
-
-				try {
-					streamActiveProvider(provider)
-
-					const eventStream = getEventStream(messages, provider, abort.signal)
-
-					for await (const event of eventStream) {
-						if (event.event !== 'on_chat_model_stream') continue
-						const content = event.data?.chunk?.content
-						if (!content || typeof content !== 'string') continue
-
-						for (let i = 0; i < content.length; i += STREAM_CHUNK_SIZE) {
-							const chunk = content.slice(i, i + STREAM_CHUNK_SIZE)
-							controller.enqueue(encoder.encode(chunk))
-						}
-					}
-					break
-				} catch (err: any) {
-					if (err?.name === 'AbortError') return
-					if (err?.statusCode === 429 || err?.statusText?.includes('Too Many Requests')) {
-						console.warn(`${provider} - 429 - falling back...`)
-						continue
-					}
-					controller.error(err)
-					return
-				}
+			const streamMeta = (meta: Meta) => {
+				controller.enqueue(encoder.encode(`__META__:${JSON.stringify(meta)}\n`))
 			}
+
+			let timedOut = false
+
+			try {
+				streamMeta({ provider, remainingLimit })
+
+				const eventStream = getEventStream(messages, provider, abort.signal)
+
+				await Promise.race([
+					(async () => {
+						for await (const event of eventStream) {
+							if (timedOut) break
+							if (event.event !== 'on_chat_model_stream') continue
+							const content = event.data?.chunk?.content
+							if (!content || typeof content !== 'string') continue
+							for (let i = 0; i < content.length; i += STREAM_CHUNK_SIZE) {
+								const chunk = content.slice(i, i + STREAM_CHUNK_SIZE)
+								controller.enqueue(encoder.encode(chunk))
+							}
+						}
+					})(),
+					new Promise((_, reject) =>
+						setTimeout(() => {
+							timedOut = true
+							abort.abort()
+							reject()
+						}, CONNECTION_TIMEOUT)
+					)
+				])
+			} catch (err: any) {
+				if (timedOut) streamMeta({ error: 'server_offline' })
+				// controller.error(err)
+			}
+
 			controller.close()
 		},
 		cancel() {
 			abort.abort()
 		}
-	})
-
-	return new Response(body, {
-		headers: { 'Content-Type': 'application/json' }
 	})
 }

@@ -40,3 +40,12 @@ CREATE TABLE products (
 CREATE INDEX products_embedding_idx
 ON products
 USING hnsw (embedding vector_cosine_ops);
+
+
+-- For LLM rate limit
+CREATE TABLE IF NOT EXISTS llm_usage (
+    session_id TEXT NOT NULL,
+    date DATE NOT NULL,
+    count INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (session_id, date)
+);

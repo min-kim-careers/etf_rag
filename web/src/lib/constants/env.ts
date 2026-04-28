@@ -1,0 +1,11 @@
+import { env } from '$env/dynamic/private'
+
+export const ENV = {
+	DB_URL: env.DB_URL,
+	GEMINI_API_KEY: env.GEMINI_API_KEY,
+	BETTER_AUTH_URL: env.BETTER_AUTH_URL,
+	BETTER_AUTH_SECRET: env.BETTER_AUTH_SECRET,
+	API_URL: env.API_URL,
+	OLLAMA_URL: env.OLLAMA_URL,
+	LOCAL_LLM_URL: env.LOCAL_LLM_URL
+} as const

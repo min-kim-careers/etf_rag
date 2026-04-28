@@ -3,9 +3,7 @@ from pandas import DataFrame
 
 import requests
 
-
-EMBED_URL = "http://etf_dev_embedding-service:11434/v1/embeddings"
-EMBEDDING_MODEL = "nomic-embed-text"
+from app.core import env
 
 
 def _build_embedding_text(row):
@@ -48,10 +46,10 @@ def get_embedding_texts(df: DataFrame, str_cols: list[str]) -> list:
 
 def get_embeddings(embedding_texts: list) -> list[float]:
     payload = {
-        "model": EMBEDDING_MODEL,
+        "model": env.EMBEDDING_MODEL,
         "input": embedding_texts,
     }  # list works here
-    res = requests.post(EMBED_URL, json=payload)
+    res = requests.post(env.EMBEDDING_URL, json=payload)
     res.raise_for_status()
 
     # OpenAI-compatible format

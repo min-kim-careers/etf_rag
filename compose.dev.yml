@@ -28,6 +28,8 @@ services:
     environment:
       # Refer to DB service authentication details
       - DB_URL=dbuser:dbpass@etf_dev_db-service:5432/dbname
+      - EMBEDDING_URL=http://etf_dev_ollama-service:11434/v1/embeddings
+      - EMBEDDING_MODEL=nomic-embed-text
     volumes:
       - ./api/app:/code/app
       - venv:/code/.venv
@@ -35,13 +37,13 @@ services:
     networks:
       - backend-network
 
-  etf_dev_embedding-service:
-    container_name: etf_dev_embedding-container
+  etf_dev_ollama-service:
+    container_name: etf_dev_ollama-container
     restart: always
     image: ollama/ollama:latest
     volumes:
-      - embedding_data:/root/.ollama
-      - ./embedding/entrypoint.sh:/entrypoint.sh
+      - ollama_data:/root/.ollama
+      - ./ollama/entrypoint.sh:/entrypoint.sh
     entrypoint: ["/bin/sh", "/entrypoint.sh"]
     networks:
       - backend-network
@@ -55,22 +57,24 @@ services:
       target: dev
       args:
         - PORT=5173
+        - PUBLIC_APP_TITLE=ETF
     environment:
+      - PUBLIC_APP_TITLE=ETF
+
       # Refer to DB service authentication details
       - DB_URL=postgres://dbuser:dbpass@etf_dev_db-service:5432/dbname
 
       - GEMINI_API_KEY=REDACTED
 
-      - BETTER_AUTH_SECRET=REDACTED
       - BETTER_AUTH_URL=http://192.168.8.103:8083
+      - BETTER_AUTH_SECRET=REDACTED
 
       - API_URL=http://etf_dev_api-service:8000
-      - EMBEDDING_URL=http://etf_dev_embedding-service:11434
+      - OLLAMA_URL=http://etf_dev_ollama-service:11434
 
       # Home PC
       - LOCAL_LLM_URL=http://192.168.8.170:9090
 
-      - PUBLIC_APP_TITLE=ETF
     volumes:
       - ./web:/app
     networks:
@@ -83,18 +87,17 @@ services:
     image: nginx:latest
     restart: always
     ports:
-      - 8083:8083
+      - 8083:80
     environment:
       - HOST=192.168.8.103
-      - PORT=8083
-      - WEB_SERVICE=etf_dev_web-service:5173
+      - WEB_SERVICE=http://etf_dev_web-service:5173
     volumes:
       - ./gateway/default.conf.template:/etc/nginx/templates/default.conf.template:ro
     networks:
       - gateway-network
 
 volumes:
-  embedding_data:
+  ollama_data:
   db-data:
   venv:
   pip:

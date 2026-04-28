@@ -11,7 +11,8 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "prettier --write .",
-		"lint": "eslint ."
+		"lint": "eslint .",
+		"start": "node build"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.4.0",

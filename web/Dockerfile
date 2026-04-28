@@ -6,10 +6,10 @@ WORKDIR /app
 FROM base AS deps
 
 ARG PORT
-ARG HOST
+ARG PUBLIC_APP_TITLE
 
 ENV PORT=${PORT}
-ENV HOST=${HOST}
+ENV PUBLIC_APP_TITLE=${PUBLIC_APP_TITLE}
 
 COPY package.json pnpm-lock.yaml /app/
 RUN pnpm install --frozen-lockfile
@@ -18,14 +18,14 @@ FROM deps AS build
 
 COPY . .
 
-RUN pnpm build
+RUN BUILDING=true pnpm build
 
 FROM build AS prod
 
 COPY --from=build /app /app
 ENV NODE_ENV=production
 
-CMD ["pnpm", "preview", "--host"]
+CMD ["pnpm", "start"]
 
 FROM deps AS dev
 

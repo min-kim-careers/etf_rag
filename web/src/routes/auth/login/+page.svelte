@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Button from '$lib/components/button.svelte'
 	import { APP_DATA } from '$lib/constants/app_data'
 	import { APP_ROUTES } from '$lib/constants/app_routes'
+	import Button from '$lib/shadcn/components/ui/button/button.svelte'
 	import toast from 'svelte-french-toast'
 	import { superForm, type SuperValidated } from 'sveltekit-superforms'
 
@@ -44,7 +44,7 @@
 			<p class="px-2 text-sm text-red-500">{$errors.password}</p>
 		{/if}
 
-		<Button type="submit" disabled={$submitting}>
+		<Button class="h-10" type="submit" disabled={$submitting}>
 			{#if $delayed}
 				Signing in…
 			{:else}

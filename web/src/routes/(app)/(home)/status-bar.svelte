@@ -1,68 +1,49 @@
 <script lang="ts">
-	import Button from '$lib/components/button.svelte'
-	import LoadingText from '$lib/components/loading-text.svelte'
-	import { API_ROUTES } from '$routes/api/api_routes'
+	import Button from '$lib/shadcn/components/ui/button/button.svelte'
+	import { Label } from '$lib/shadcn/components/ui/label'
+	import { Switch } from '$lib/shadcn/components/ui/switch'
+	import { cn } from '$lib/shadcn/utils'
+	import type { Provider } from '$lib/utils/langchain/config'
 	import { onMount } from 'svelte'
-	import toast from 'svelte-french-toast'
 
-	let { provider, handleClear } = $props()
+	let {
+		handleClear,
+		setProvider
+	}: { handleClear: () => void; setProvider: (p: Provider) => void } = $props()
 
-	let pingInterval: ReturnType<typeof setInterval> | null
-	let pingTries = $state(0)
-	let pingExceeded = $derived(pingTries >= 3)
+	let localMode = $state(false)
 
 	onMount(() => {
-		pingServer()
-		pingInterval = setInterval(pingServer, 2000)
-
-		return () => {
-			if (pingInterval) clearInterval(pingInterval)
-		}
+		const _localMode = localStorage.getItem('localMode')
+		if (_localMode) localMode = JSON.parse(_localMode)
 	})
 
-	function stopPinging() {
-		if (pingInterval) {
-			clearInterval(pingInterval)
-			pingInterval = null
+	$effect(() => {
+		if (localMode) {
+			setProvider('local')
+			localStorage.setItem('localMode', 'true')
+		} else {
+			setProvider('cloud')
+			localStorage.setItem('localMode', 'false')
 		}
-	}
-
-	let checking = false
-	async function pingServer() {
-		if (checking || pingExceeded) return
-		checking = true
-
-		try {
-			const res = await fetch(API_ROUTES.chat.ping)
-			const data = await res.json()
-			pingTries += 1
-
-			if (data.ok) {
-				provider = 'local'
-				stopPinging()
-				return
-			}
-
-			if (pingExceeded) stopPinging()
-		} catch (error) {
-			toast('Something went wrong.')
-			stopPinging()
-		} finally {
-			checking = false
-		}
-	}
+	})
 </script>
 
 <div class="flex w-full items-center justify-between border-b px-2 py-1 text-sm">
-	<span>
-		{#if provider}
-			Now using <span class="">"{provider}"</span>
-		{:else if pingExceeded}
-			Server offline (refresh to try again)
-		{:else}
-			<LoadingText text="Connecting" />
-		{/if}
+	<span class="flex items-center space-x-2">
+		<Label
+			for="switch"
+			class={cn('transition-opacity duration-200', localMode ? 'opacity-50' : 'opacity-100')}
+			>Cloud</Label
+		>
+		<Switch id="switch" bind:checked={localMode} />
+		<Label
+			for="switch"
+			class={cn('transition-opacity duration-200', localMode ? 'opacity-100' : 'opacity-50')}
+		>
+			Local
+		</Label>
 	</span>
 
-	<span><Button onclick={handleClear}>Clear</Button></span>
+	<span><Button class="h-6" variant="ghost" onclick={handleClear}>Clear</Button></span>
 </div>
