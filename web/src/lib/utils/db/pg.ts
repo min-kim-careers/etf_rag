@@ -1,4 +1,4 @@
-import { ENV } from '$lib/constants/env'
+import { ENV } from '$lib/constants/app-env'
 import { Pool } from 'pg'
 
 export const dbPool = new Pool({

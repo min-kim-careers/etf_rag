@@ -28,8 +28,8 @@ export const getProductsByFilter = tool(
 		description: `
 		Filter ETFs by specific criteria. Use this for queries like "US ETFs", "Australian equity ETFs", or "ETFs under 0.2% MER".
 		Filterable fields:
-		- region: ${PRODUCT_REGIONS.join(', ')}
-		- category: ${PRODUCT_CATEGORIES.join(', ')}
+		- region: ${Object.keys(PRODUCT_REGIONS).join(', ')}
+		- category: ${Object.keys(PRODUCT_CATEGORIES).join(', ')}
 		- mer_pa_max: maximum MER percentage
 		- fum_m_min: minimum funds under management in millions
 		`,

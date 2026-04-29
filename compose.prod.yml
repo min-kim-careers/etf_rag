@@ -56,11 +56,14 @@ services:
       target: prod
       args:
         - PORT=3000
-        - PUBLIC_APP_TITLE=ETF
+        - PUBLIC_APP_TITLE=ETF Explorer
     environment:
-      - PUBLIC_APP_TITLE=ETF
+      - PUBLIC_APP_TITLE=ETF Explorer
 
-      # Refer to DB service authentication details
+      # flags
+      - SIGNUP_ENABLED=false
+
+      # private
       - DB_URL=postgres://dbuser:dbpass@etf_prod_db-service:5432/dbname
 
       - GEMINI_API_KEY=REDACTED
@@ -68,7 +71,11 @@ services:
       - BETTER_AUTH_URL=https://etf.kibon.dev
       - BETTER_AUTH_SECRET=REDACTED
 
+      - ADMIN_USER=admin@admin.com
+      - ADMIN_PASSWORD=REDACTED
+
       - API_URL=http://etf_prod_api-service:8000
+
       - OLLAMA_URL=http://etf_prod_ollama-service:11434
 
       - LOCAL_LLM_URL=http://192.168.8.170:9090

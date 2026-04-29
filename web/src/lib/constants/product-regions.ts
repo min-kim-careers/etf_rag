@@ -1,1 +1,7 @@
-export const PRODUCT_REGIONS = ['australia', 'usa', 'asia', 'europe', 'global'] as const
+export const PRODUCT_REGIONS: Record<string, string> = {
+	australia: 'Australia',
+	usa: 'USA',
+	asia: 'Asia',
+	europe: 'Europe',
+	global: 'Global'
+} as const

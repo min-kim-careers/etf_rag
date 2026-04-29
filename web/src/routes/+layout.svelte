@@ -1,8 +1,8 @@
 <script lang="ts">
 	import favicon from '$lib/assets/favicon.svg'
-	import { APP_DATA } from '$lib/constants/app_data'
+	import { APP_DATA } from '$lib/constants/app-data'
+	import { Toaster } from '$lib/shadcn/components/ui/sonner'
 	import '$src/app.css'
-	import { Toaster } from 'svelte-french-toast'
 
 	let { children } = $props()
 </script>
@@ -14,4 +14,4 @@
 
 {@render children?.()}
 
-<Toaster toastOptions={{ duration: 1500 }} />
+<Toaster position="top-center" />

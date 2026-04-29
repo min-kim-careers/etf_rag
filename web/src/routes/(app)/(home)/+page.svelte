@@ -1,31 +1,30 @@
 <script lang="ts">
+	import MessageBanner from '$lib/components/message-banner.svelte'
+	import StatusBar from '$lib/components/status-bar.svelte'
 	import Table from '$lib/components/svelte-markdown/table.svelte'
 	import TypingIndicator from '$lib/components/typing-indicator.svelte'
-	import WelcomeToast from '$lib/components/welcome-toast.svelte'
 	import Button from '$lib/shadcn/components/ui/button/button.svelte'
 	import { cn } from '$lib/shadcn/utils'
 	import type { Message } from '$lib/types/message'
 	import type { Provider } from '$lib/utils/langchain/config'
-	import LimitBanner from '$routes/(app)/(home)/limit-banner.svelte'
-	import StatusBar from '$routes/(app)/(home)/status-bar.svelte'
 	import { API_ROUTES } from '$routes/api/api_routes'
 	import type { Meta } from '$routes/api/chat/[...path]/stream-chat'
 	import SvelteMarkdown from '@humanspeak/svelte-markdown'
+	import { capitalizeFirstLetter } from 'better-auth'
 	import { onMount, tick } from 'svelte'
-	import toast from 'svelte-french-toast'
-
-	const messagesKey = 'messages'
+	import { toast } from 'svelte-sonner'
 
 	let { data }: { data: { username: string; signedIn: string } } = $props()
 
 	$effect(() => {
-		if (data.signedIn === '1') toast(WelcomeToast)
+		if (data.signedIn === '1') toast(`Welcome ${data.username}`)
 	})
 
 	function goToBottom() {
 		messagePaneEl.scrollTop = messagePaneEl.scrollHeight
 	}
 
+	const messagesKey = 'messages'
 	onMount(async () => {
 		const msgs = localStorage.getItem(messagesKey)
 		if (msgs) {
@@ -39,8 +38,16 @@
 		meta.remainingLimit = limit
 	})
 
-	let messages: Message[] = $state([])
-	let meta: Meta = $state({
+	const seedMessages: Message[] = [
+		{
+			role: 'assistant',
+			content:
+				'Hi! I can help you research ASX ETFs. Ask me about specific funds, compare categories, or explore options by region or asset type.'
+		}
+	]
+
+	let messages = $state<Message[]>([...seedMessages])
+	let meta = $state<Meta>({
 		provider: 'cloud',
 		remainingLimit: -1
 	})
@@ -92,7 +99,7 @@
 
 				if (chunk.startsWith('__META__:')) {
 					meta = { ...meta, ...JSON.parse(chunk.slice(9)) }
-					if (meta.error) throw new Error(meta.error)
+					if (meta.error) throw new Error()
 					continue
 				}
 
@@ -105,8 +112,8 @@
 
 			error = false
 		} catch (e: any) {
-			if (e.message === 'server_offline') {
-				toast(`${meta.provider} server is currently unavailable`)
+			if (meta.error === 'server_offline' && meta.provider) {
+				toast(`${capitalizeFirstLetter(meta.provider)} server is currently unavailable`)
 				meta.error = undefined
 			} else {
 				toast('Something went wrong.')
@@ -127,13 +134,12 @@
 	let inputEl: HTMLInputElement
 
 	let messagePaneEl: HTMLDivElement
-	let hideLimitBanner = $state(false)
 </script>
 
 <StatusBar
 	handleClear={() => {
-		messages = []
-		localStorage.removeItem(messagesKey)
+		messages = [...seedMessages]
+		localStorage.setItem(messagesKey, JSON.stringify(messages))
 	}}
 	setProvider={(p: Provider) => (meta.provider = p)}
 />
@@ -143,11 +149,15 @@
 		bind:this={messagePaneEl}
 		class="relative flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto rounded"
 	>
-		<LimitBanner {hideLimitBanner} {meta} />
-		{#each messages as m}
+		<MessageBanner {meta} />
+		{#each messages as m, i}
 			{#if m.content}
 				<div class={cn('flex w-full', m.role === 'user' ? 'justify-end' : 'justify-start')}>
 					<div class="flex flex-col">
+						<div class={cn('px-2 text-sm', m.role === 'user' && 'text-end')}>
+							{m.role === 'user' ? data.username : capitalizeFirstLetter(m.role)}
+						</div>
+
 						<div
 							class={cn(
 								'rounded border p-2 leading-relaxed  [&_hr]:my-3 [&_li]:mb-1 [&_p]:mb-2',
@@ -161,7 +171,7 @@
 								}}
 							/>
 						</div>
-						{#if error && m.role == 'user'}
+						{#if error && m.role == 'user' && i === messages.length - 1}
 							<span class="text-sm text-red-600">error streaming</span>
 						{/if}
 					</div>

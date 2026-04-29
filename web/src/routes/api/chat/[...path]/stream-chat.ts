@@ -3,7 +3,8 @@ import { getEventStream, type Provider } from '$lib/utils/langchain/config'
 
 // response streaming speed, higher = faster
 const STREAM_CHUNK_SIZE = 10
-const CONNECTION_TIMEOUT = 1000
+
+const CONNECTION_TIMEOUT = 5000
 
 export type Meta = Partial<{
 	provider: Provider
@@ -32,13 +33,23 @@ export const streamChat = async (
 
 				const eventStream = getEventStream(messages, provider, abort.signal)
 
+				let connected = false
+
 				await Promise.race([
 					(async () => {
 						for await (const event of eventStream) {
+							console.log(event.event)
+
 							if (timedOut) break
+
 							if (event.event !== 'on_chat_model_stream') continue
+
 							const content = event.data?.chunk?.content
+
 							if (!content || typeof content !== 'string') continue
+
+							connected = true
+
 							for (let i = 0; i < content.length; i += STREAM_CHUNK_SIZE) {
 								const chunk = content.slice(i, i + STREAM_CHUNK_SIZE)
 								controller.enqueue(encoder.encode(chunk))
@@ -47,15 +58,22 @@ export const streamChat = async (
 					})(),
 					new Promise((_, reject) =>
 						setTimeout(() => {
-							timedOut = true
-							abort.abort()
-							reject()
+							if (!connected) {
+								timedOut = true
+								abort.abort()
+								reject()
+							}
 						}, CONNECTION_TIMEOUT)
 					)
 				])
 			} catch (err: any) {
-				if (timedOut) streamMeta({ error: 'server_offline' })
-				// controller.error(err)
+				console.error('Streaming error:', err)
+
+				if (timedOut) {
+					streamMeta({ error: 'server_offline' })
+				} else {
+					controller.error(err)
+				}
 			}
 
 			controller.close()

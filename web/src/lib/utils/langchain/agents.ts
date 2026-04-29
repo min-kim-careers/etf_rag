@@ -1,4 +1,5 @@
-import { ENV } from '$lib/constants/env'
+import { ENV } from '$lib/constants/app-env'
+import { getProductFilters } from '$lib/utils/langchain/tools/get-product-filters'
 import { getProductsByFilter } from '$lib/utils/langchain/tools/get-products-by-filter'
 import { getProductsBySemantics } from '$lib/utils/langchain/tools/get-products-by-semantics'
 import { ChatGoogle } from '@langchain/google'
@@ -11,7 +12,7 @@ const SYSTEM_PROMPT = `
 	You are an ETF assistant. When asked to list or find ETFs, always call the available tools immediately. Never ask clarifying questions before calling a tool. Output results as tables.
 	`
 
-const TOOLS = [getProductsBySemantics, getProductsByFilter]
+const TOOLS = [getProductsBySemantics, getProductsByFilter, getProductFilters]
 
 export const cloudAgent = createAgent({
 	model: new ChatGoogle({

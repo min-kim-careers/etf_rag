@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { goto } from '$app/navigation'
-	import { APP_ROUTES } from '$lib/constants/app_routes'
+	import { APP_ROUTES } from '$lib/constants/app-routes'
 	import Button from '$lib/shadcn/components/ui/button/button.svelte'
 	import { API_ROUTES } from '$routes/api/api_routes'
-	import toast from 'svelte-french-toast'
+	import { toast } from 'svelte-sonner'
 
-	const { username }: { username: string } = $props()
+	const { username }: { username?: string } = $props()
 </script>
 
-<div class="mx-4 flex items-center justify-between text-sm">
+<div class="mx-2 flex items-center justify-between text-sm">
 	<div class="">{username}</div>
 
 	<Button

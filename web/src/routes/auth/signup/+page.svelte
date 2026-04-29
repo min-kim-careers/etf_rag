@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Button from '$lib/shadcn/components/ui/button/button.svelte'
-	import toast from 'svelte-french-toast'
+	import { toast } from 'svelte-sonner'
 	import { superForm, type SuperValidated } from 'sveltekit-superforms'
 
 	export let data: {

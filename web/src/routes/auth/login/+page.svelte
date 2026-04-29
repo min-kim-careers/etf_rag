@@ -1,16 +1,17 @@
 <script lang="ts">
-	import { APP_DATA } from '$lib/constants/app_data'
-	import { APP_ROUTES } from '$lib/constants/app_routes'
+	import { APP_DATA } from '$lib/constants/app-data'
+	import { APP_ROUTES } from '$lib/constants/app-routes'
 	import Button from '$lib/shadcn/components/ui/button/button.svelte'
-	import toast from 'svelte-french-toast'
+	import { toast } from 'svelte-sonner'
 	import { superForm, type SuperValidated } from 'sveltekit-superforms'
 
-	let { data }: { data: { form: SuperValidated<any>; createdAccount: string } } = $props()
+	let {
+		data
+	}: { data: { form: SuperValidated<any>; createdAccount: string; signupEnabled: boolean } } =
+		$props()
 
 	$effect(() => {
-		if (data.createdAccount === '1') {
-			toast('Account created successfully!')
-		}
+		if (data.createdAccount === '1') toast('Account created successfully!')
 	})
 
 	const { form, errors, enhance, submitting, delayed } = superForm(data.form, {
@@ -53,5 +54,10 @@
 		>
 	</form>
 
-	<a href={APP_ROUTES.auth.signup} class="text-sm underline">Create account</a>
+	<Button
+		variant="link"
+		disabled={!data.signupEnabled}
+		href={data.signupEnabled ? APP_ROUTES.auth.signup : undefined}
+		class="text-sm underline">Create account</Button
+	>
 </div>

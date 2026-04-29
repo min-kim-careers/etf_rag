@@ -1,5 +1,5 @@
 import { getRequestEvent } from '$app/server'
-import { ENV } from '$lib/constants/env'
+import { ENV } from '$lib/constants/app-env'
 import { dbPool } from '$lib/utils/db/pg'
 import { betterAuth } from 'better-auth'
 import { sveltekitCookies } from 'better-auth/svelte-kit'
@@ -16,5 +16,10 @@ export const auth: ReturnType<typeof betterAuth> = building
 			emailAndPassword: {
 				enabled: true,
 				autoSignIn: false
+			},
+			user: {
+				deleteUser: {
+					enabled: true
+				}
 			}
 		})

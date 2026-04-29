@@ -1,4 +1,4 @@
-import { ENV } from '$lib/constants/env'
+import { ENV } from '$lib/constants/app-env'
 import { OllamaEmbeddings } from '@langchain/ollama'
 
 const embeddings = new OllamaEmbeddings({
