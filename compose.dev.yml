@@ -63,6 +63,7 @@ services:
 
       # flags
       - SIGNUP_ENABLED=false
+      - RATE_LIMIT_ENABLED=true
 
       # private
       - DB_URL=postgres://dbuser:dbpass@etf_dev_db-service:5432/dbname

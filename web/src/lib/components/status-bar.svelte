@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Button from '$lib/shadcn/components/ui/button/button.svelte'
-	import { Label } from '$lib/shadcn/components/ui/label'
 	import { Switch } from '$lib/shadcn/components/ui/switch'
 	import { cn } from '$lib/shadcn/utils'
 	import type { Provider } from '$lib/utils/langchain/config'
@@ -31,18 +30,11 @@
 
 <div class="flex w-full items-center justify-between border-b px-2 py-1 text-sm">
 	<span class="flex items-center space-x-2">
-		<Label
-			for="switch"
-			class={cn('transition-opacity duration-200', localMode ? 'opacity-50' : 'opacity-100')}
-			>Cloud</Label
-		>
-		<Switch id="switch" bind:checked={localMode} />
-		<Label
-			for="switch"
-			class={cn('transition-opacity duration-200', localMode ? 'opacity-100' : 'opacity-50')}
-		>
-			Local
-		</Label>
+		<span class={cn('transition-opacity duration-200', localMode && 'opacity-50')}>Cloud</span>
+
+		<Switch bind:checked={localMode} class="data-unchecked:bg-primary" />
+
+		<span class={cn('transition-opacity duration-200', !localMode && 'opacity-50')}> Local </span>
 	</span>
 
 	<span><Button class="h-6" variant="ghost" onclick={handleClear}>Clear</Button></span>

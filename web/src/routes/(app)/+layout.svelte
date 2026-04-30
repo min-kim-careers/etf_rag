@@ -6,14 +6,14 @@
 	const { username } = data
 </script>
 
-<div class="flex min-h-screen min-w-screen flex-col items-center justify-between px-2">
-	<div class="w-full">
+<div class="flex h-screen w-screen flex-col items-center gap-4 px-2">
+	<div class="w-full flex-shrink-0">
 		<Header {username} />
 	</div>
 
-	<div class="flex h-[720px] max-w-5xl flex-col justify-center rounded border sm:w-full">
+	<div class="flex min-h-0 w-full max-w-5xl flex-1 flex-col rounded border">
 		{@render children?.()}
 	</div>
 
-	<div></div>
+	<div class="flex-shrink-0"></div>
 </div>

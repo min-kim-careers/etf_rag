@@ -1,4 +1,4 @@
-import { flags } from '$lib/constants/app-flags'
+import { FLAGS } from '$lib/constants/app-flags'
 import { APP_ROUTES } from '$lib/constants/app-routes'
 import { setFlash } from '$lib/helpers/flash-helpers'
 import { auth } from '$lib/utils/better-auth/server'
@@ -8,7 +8,7 @@ import { setError, superValidate } from 'sveltekit-superforms/server'
 import { schema } from './schema'
 
 export async function load() {
-	if (!flags.signup) redirect(303, APP_ROUTES.auth.login)
+	if (!FLAGS.SIGNUP_ENABLED) redirect(303, APP_ROUTES.auth.login)
 
 	return {
 		form: await superValidate(zod4(schema), {
@@ -20,7 +20,7 @@ export async function load() {
 
 export const actions = {
 	default: async ({ request, locals, cookies }) => {
-		if (!flags.signup) fail(403)
+		if (!FLAGS.SIGNUP_ENABLED) fail(403)
 
 		const form = await superValidate(request, zod4(schema))
 

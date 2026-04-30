@@ -1,5 +1,5 @@
 <script lang="ts">
-	import MessageBanner from '$lib/components/message-banner.svelte'
+	import BannerList from '$lib/components/banner-list.svelte'
 	import StatusBar from '$lib/components/status-bar.svelte'
 	import Table from '$lib/components/svelte-markdown/table.svelte'
 	import TypingIndicator from '$lib/components/typing-indicator.svelte'
@@ -14,10 +14,12 @@
 	import { onMount, tick } from 'svelte'
 	import { toast } from 'svelte-sonner'
 
-	let { data }: { data: { username: string; signedIn: string } } = $props()
+	let { data } = $props()
+
+	const { signedIn, username, rateLimited } = data
 
 	$effect(() => {
-		if (data.signedIn === '1') toast(`Welcome ${data.username}`)
+		if (signedIn === '1') toast(`Welcome ${username}`)
 	})
 
 	function goToBottom() {
@@ -149,13 +151,14 @@
 		bind:this={messagePaneEl}
 		class="relative flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto rounded"
 	>
-		<MessageBanner {meta} />
+		<BannerList {meta} {rateLimited} />
+
 		{#each messages as m, i}
 			{#if m.content}
 				<div class={cn('flex w-full', m.role === 'user' ? 'justify-end' : 'justify-start')}>
 					<div class="flex flex-col">
 						<div class={cn('px-2 text-sm', m.role === 'user' && 'text-end')}>
-							{m.role === 'user' ? data.username : capitalizeFirstLetter(m.role)}
+							{m.role === 'user' ? username : capitalizeFirstLetter(m.role)}
 						</div>
 
 						<div
@@ -184,7 +187,7 @@
 		{/if}
 	</div>
 
-	<form class="flex w-full gap-2" onsubmit={handleSubmit}>
+	<form class="flex h-10 w-full gap-2" onsubmit={handleSubmit}>
 		<input
 			bind:value={input}
 			bind:this={inputEl}

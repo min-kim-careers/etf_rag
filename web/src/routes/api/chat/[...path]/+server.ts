@@ -1,4 +1,5 @@
 import { ENV } from '$lib/constants/app-env'
+import { FLAGS } from '$lib/constants/app-flags'
 import { APP_ROUTES } from '$lib/constants/app-routes'
 import type { Message } from '$lib/types/message'
 import type { Provider } from '$lib/utils/langchain/config'
@@ -35,7 +36,8 @@ export const POST = async ({ request, params, locals }) => {
 	switch (params.path) {
 		case 'stream':
 			const { allowed, remaining } = await checkRemainingLimit(getIp(request))
-			if (!allowed) fail(429, 'Rate limit exceeded')
+
+			if (FLAGS.RATE_LIMIT_ENABLED && !allowed) fail(429, 'Rate limit exceeded')
 
 			const { messages, provider }: { messages: Message[]; provider: Provider } =
 				await request.json()

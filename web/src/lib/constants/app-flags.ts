@@ -1,5 +1,6 @@
 import { env } from '$env/dynamic/private'
 
-export const flags = {
-	signup: env.SIGNUP_ENABLED === 'true'
+export const FLAGS = {
+	SIGNUP_ENABLED: env.SIGNUP_ENABLED === 'true',
+	RATE_LIMIT_ENABLED: env.RATE_LIMIT_ENABLED === 'true'
 }

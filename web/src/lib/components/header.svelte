@@ -8,19 +8,21 @@
 	const { username }: { username?: string } = $props()
 </script>
 
-<div class="mx-2 flex items-center justify-between text-sm">
-	<div class="">{username}</div>
+<div class="flex items-center justify-between text-sm">
+	<span class="">{username}</span>
 
-	<Button
-		variant="ghost"
-		onclick={async () => {
-			try {
-				await fetch(API_ROUTES.auth.signout, { method: 'POST' })
-				goto(APP_ROUTES.auth.login)
-				toast('Signed out successfully.')
-			} catch (error) {
-				toast.error('Something went wrong.')
-			}
-		}}>Sign out</Button
-	>
+	<span>
+		<Button
+			variant="ghost"
+			onclick={async () => {
+				try {
+					await fetch(API_ROUTES.auth.signout, { method: 'POST' })
+					goto(APP_ROUTES.auth.login)
+					toast('Signed out successfully.')
+				} catch (error) {
+					toast.error('Something went wrong.')
+				}
+			}}>Sign out</Button
+		>
+	</span>
 </div>

@@ -1,5 +1,5 @@
 import { ENV } from '$lib/constants/app-env'
-import { flags } from '$lib/constants/app-flags'
+import { FLAGS } from '$lib/constants/app-flags'
 import { APP_ROUTES } from '$lib/constants/app-routes'
 import { getFlash, setFlash } from '$lib/helpers/flash-helpers'
 import { auth } from '$lib/utils/better-auth/server'
@@ -19,7 +19,7 @@ export const load = async ({ cookies, locals, request }) => {
 
 	const createdAccount = getFlash({ cookies, path: APP_ROUTES.home, key: 'created-account' })
 
-	return { form, createdAccount, signupEnabled: flags.signup }
+	return { form, createdAccount, signupEnabled: FLAGS.SIGNUP_ENABLED }
 }
 
 export const actions: Actions = {
