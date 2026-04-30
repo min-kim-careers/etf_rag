@@ -1,7 +1,0 @@
-#!/bin/bash
-
-ENV=${1:-dev}
-CONTAINER="etf_${ENV}_web-container"
-CONFIG_PATH="src/lib/utils/better-auth/server.ts"
-
-docker exec -it "$CONTAINER" npx tsx ./create-admin.ts

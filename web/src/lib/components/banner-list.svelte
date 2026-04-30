@@ -5,14 +5,15 @@
 </script>
 
 <div class="sticky top-0 space-y-2">
-	<Banner>
-		<span>You have {meta.remainingLimit > 0 ? meta.remainingLimit : '...'} messages remaining</span
-		></Banner
-	>
-
 	{#if rateLimited}
-		<Banner style="bg-gray-100"
-			><span>Your history is stored locally within your browser only.</span></Banner
+		<Banner>
+			<span
+				>You have {meta.remainingLimit > 0 ? meta.remainingLimit : '...'} messages remaining</span
+			></Banner
 		>
 	{/if}
+
+	<Banner style="bg-gray-100"
+		><span>Your history is stored locally within your browser only.</span></Banner
+	>
 </div>

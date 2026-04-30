@@ -1,4 +1,4 @@
-import { auth } from '$lib/utils/better-auth/server'
+import { auth } from '$lib/utils/better-auth/config'
 import { json } from '@sveltejs/kit'
 
 export const signout = async (request: Request) => {

@@ -1,17 +1,17 @@
-import { PRODUCT_CATEGORIES } from '$lib/constants/product-categories'
-import { json } from '@sveltejs/kit'
-import { getProducts } from './get-products'
+// import { PRODUCT_CATEGORIES } from '$lib/constants/product-categories'
+// import { json } from '@sveltejs/kit'
+// import { getProducts } from './get-products'
 
-export const GET = async ({ params, url }): Promise<any> => {
-	switch (params.path) {
-		case 'query':
-			const products = await getProducts(url.searchParams)
-			return json({ products })
+// export const GET = async ({ params, url }): Promise<any> => {
+// 	switch (params.path) {
+// 		case '':
+// 			const products = await getProducts(url.searchParams)
+// 			return json({ products })
 
-		case 'categories':
-			return json({ categories: PRODUCT_CATEGORIES })
+// 		case 'categories':
+// 			return json({ categories: Object.values(PRODUCT_CATEGORIES) })
 
-		default:
-			break
-	}
-}
+// 		default:
+// 			break
+// 	}
+// }

@@ -1,8 +1,9 @@
+import { dev } from '$app/environment'
 import { ENV } from '$lib/constants/app-env'
 import { FLAGS } from '$lib/constants/app-flags'
 import { APP_ROUTES } from '$lib/constants/app-routes'
 import { getFlash, setFlash } from '$lib/helpers/flash-helpers'
-import { auth } from '$lib/utils/better-auth/server'
+import { auth } from '$lib/utils/better-auth/config'
 import { fail, redirect, type Actions } from '@sveltejs/kit'
 import { zod4 } from 'sveltekit-superforms/adapters'
 import { setError, superValidate } from 'sveltekit-superforms/server'
@@ -10,7 +11,7 @@ import { schema } from './schema'
 
 export const load = async ({ cookies, locals, request }) => {
 	const form = await superValidate(
-		{ email: ENV.ADMIN_USER, password: ENV.ADMIN_PASSWORD },
+		{ email: ENV.TEMP_USER, password: dev ? ENV.TEMP_PASSWORD : undefined },
 		zod4(schema),
 		{
 			errors: false

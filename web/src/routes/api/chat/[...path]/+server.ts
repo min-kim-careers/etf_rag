@@ -1,4 +1,3 @@
-import { ENV } from '$lib/constants/app-env'
 import { FLAGS } from '$lib/constants/app-flags'
 import { APP_ROUTES } from '$lib/constants/app-routes'
 import type { Message } from '$lib/types/message'
@@ -12,15 +11,6 @@ export const GET = async ({ request, params, locals }) => {
 	if (!locals.session) throw redirect(302, APP_ROUTES.home)
 
 	switch (params.path) {
-		case 'ping':
-			try {
-				await fetch(`${ENV.LOCAL_LLM_URL}/health`)
-				return json({ ok: true })
-			} catch (err) {
-				console.error(err)
-				return json({ ok: false })
-			}
-
 		case 'limit':
 			const limit = await getRemainingLimit(getIp(request))
 			return json({ limit })
@@ -35,9 +25,12 @@ export const POST = async ({ request, params, locals }) => {
 
 	switch (params.path) {
 		case 'stream':
-			const { allowed, remaining } = await checkRemainingLimit(getIp(request))
+			const { allowed, remaining } = await checkRemainingLimit(
+				getIp(request),
+				FLAGS.RATE_LIMIT_ENABLED
+			)
 
-			if (FLAGS.RATE_LIMIT_ENABLED && !allowed) fail(429, 'Rate limit exceeded')
+			if (!allowed) fail(429, 'Rate limit exceeded')
 
 			const { messages, provider }: { messages: Message[]; provider: Provider } =
 				await request.json()

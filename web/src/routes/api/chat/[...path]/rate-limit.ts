@@ -12,17 +12,28 @@ export async function getRemainingLimit(sessionId: string) {
 	return RATE_LIMIT - (row[0]?.count ?? 0)
 }
 
-export async function checkRemainingLimit(sessionId: string) {
+async function cleanOldLimits() {
+	await sql`
+    DELETE FROM llm_usage
+    WHERE date < CURRENT_DATE - INTERVAL '7 days'
+    `
+}
+
+export async function checkRemainingLimit(sessionId: string, update: boolean = false) {
 	const remaining = await getRemainingLimit(sessionId)
+
+	await cleanOldLimits()
 
 	if (remaining <= 0) return { allowed: false, remaining: 0 }
 
-	await sql`
-    INSERT INTO llm_usage (session_id, date, count)
-    VALUES (${sessionId}, CURRENT_DATE, 1)
-    ON CONFLICT (session_id, date)
-    DO UPDATE SET count = llm_usage.count + 1
-    `
+	if (update) {
+		await sql`
+        INSERT INTO llm_usage (session_id, date, count)
+        VALUES (${sessionId}, CURRENT_DATE, 1)
+        ON CONFLICT (session_id, date)
+        DO UPDATE SET count = llm_usage.count + 1
+        `
+	}
 
 	return { allowed: true, remaining: remaining - 1 }
 }

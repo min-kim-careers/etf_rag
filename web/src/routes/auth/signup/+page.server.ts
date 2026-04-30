@@ -1,7 +1,7 @@
 import { FLAGS } from '$lib/constants/app-flags'
 import { APP_ROUTES } from '$lib/constants/app-routes'
 import { setFlash } from '$lib/helpers/flash-helpers'
-import { auth } from '$lib/utils/better-auth/server'
+import { auth } from '$lib/utils/better-auth/config'
 import { fail, redirect } from '@sveltejs/kit'
 import { zod4 } from 'sveltekit-superforms/adapters'
 import { setError, superValidate } from 'sveltekit-superforms/server'

@@ -16,7 +16,7 @@
 
 	let { data } = $props()
 
-	const { signedIn, username, rateLimited } = data
+	const { signedIn, username, rateLimited, remainingLimit } = data
 
 	$effect(() => {
 		if (signedIn === '1') toast(`Welcome ${username}`)
@@ -35,9 +35,7 @@
 			goToBottom()
 		}
 
-		const resp = await fetch(API_ROUTES.chat.limit)
-		const { limit } = await resp.json()
-		meta.remainingLimit = limit
+		meta.remainingLimit = remainingLimit
 	})
 
 	const seedMessages: Message[] = [
@@ -83,9 +81,7 @@
 				body: JSON.stringify({ messages, provider: meta.provider })
 			})
 
-			if (!res.ok || !res.body) {
-				throw new Error('No response')
-			}
+			if (!res.ok || !res.body) throw new Error('Stream fetch failed')
 
 			// step 3: reset input
 			input = ''

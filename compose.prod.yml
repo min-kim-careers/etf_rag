@@ -72,8 +72,8 @@ services:
       - BETTER_AUTH_URL=https://etf.kibon.dev
       - BETTER_AUTH_SECRET=REDACTED
 
-      - ADMIN_USER=admin@admin.com
-      - ADMIN_PASSWORD=REDACTED
+      - TEMP_USER=temp@temp.com
+      - TEMP_PASSWORD=REDACTED
 
       - API_URL=http://etf_prod_api-service:8000
 
