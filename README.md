@@ -75,4 +75,4 @@ While built as a demonstration, the architecture is applicable to:
 
 ## Access
 
-The demo is available at [your-url] by invitation. Contact [your-email] for access.
+The demo is available via the resume sent to your inbox.
