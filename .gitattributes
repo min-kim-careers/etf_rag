@@ -1,0 +1,8 @@
+*.ts linguist-language=TypeScript
+*.svelte linguist-language=Svelte
+*.py linguist-language=Python
+*.sql linguist-language=SQL
+*.dockerfile linguist-language=Dockerfile
+Dockerfile linguist-language=Dockerfile
+*.yaml linguist-language=YAML
+*.md linguist-language=Markdown
