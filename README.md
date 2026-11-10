@@ -36,11 +36,8 @@ User ─▶ SvelteKit ─▶ Agent (Llama via Ollama  OR  Gemini 2.5 Flash Lite)
 ## Stack
 SvelteKit · FastAPI · PostgreSQL + pgvector · Redis · Ollama · Gemini · Pandas · Docker Compose · nginx · Cloudflare Tunnel
 
-## Run locally
-```bash
-cp .env.example .env   # add GEMINI_API_KEY, BETTER_AUTH_SECRET
-docker compose -f compose.dev.yml up
-```
+## Running it
+Runs on Docker Compose: PostgreSQL + pgvector, a FastAPI data service, Ollama for embeddings, and Gemini or a local Llama for chat. See `compose.dev.yml` for the full setup.
 
 ## What I'd improve next
 - An evaluation set of questions with expected funds, to measure retrieval accuracy
