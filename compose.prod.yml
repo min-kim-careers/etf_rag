@@ -67,13 +67,13 @@ services:
       # private
       - DB_URL=postgres://dbuser:dbpass@etf_prod_db-service:5432/dbname
 
-      - GEMINI_API_KEY=REDACTED
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
 
       - BETTER_AUTH_URL=https://etf.kibon.dev
-      - BETTER_AUTH_SECRET=REDACTED
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
 
       - TEMP_USER=temp@temp.com
-      - TEMP_PASSWORD=REDACTED
+      - TEMP_PASSWORD=${TEMP_PASSWORD}
 
       - API_URL=http://etf_prod_api-service:8000
 
