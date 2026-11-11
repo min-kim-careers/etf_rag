@@ -1,0 +1,8 @@
+#!/bin/bash
+
+ENV=${1:-dev}
+CONTAINER="etf_${ENV}_web-container"
+CONFIG_PATH="src/lib/utils/better-auth/config.ts"
+
+docker exec -it "$CONTAINER" npx svelte-kit sync
+docker exec -it "$CONTAINER" npx -y auth@latest migrate --yes --config "$CONFIG_PATH"

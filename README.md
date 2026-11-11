@@ -6,12 +6,14 @@ Ask plain-English questions about ASX-listed ETFs and get answers grounded in re
 > "Something like VAS but with a higher yield"
 > "Which Asian ETFs have the most FUM?"
 
-Status: **Active**
+![Demo](./assets/demo.gif)
 
 ## Why
+
 Comparing ETFs on the ASX means trawling through a monthly spreadsheet of 300+ funds. General-purpose chatbots answer these questions confidently, but often with stale or invented numbers. ETF RAG answers only from the latest ASX data.
 
 ## How it works
+
 ```
 User ─▶ SvelteKit ─▶ Agent (Llama via Ollama  OR  Gemini 2.5 Flash Lite)
                           │  shared tool definitions
@@ -27,19 +29,23 @@ User ─▶ SvelteKit ─▶ Agent (Llama via Ollama  OR  Gemini 2.5 Flash Lite)
 - **Monthly ingestion.** The ASX monthly ETF report is downloaded, parsed with Pandas, classified, embedded and upserted automatically.
 
 ## Key design decisions
-| Decision | Why | Trade-off |
-|---|---|---|
-| Region is classified by keyword at ingestion, not by the LLM | It's deterministic, free and testable, while an LLM mislabels tickers like `VAS` or `NDQ` | Funds with unusual names need new keywords |
-| SQL for structured filters, vectors for the rest | Vector search is poor at exact numeric limits like "MER < 0.2%" | The agent has to choose the right tool, which takes careful tool descriptions |
-| Local LLM as an option | No API cost, and queries stay on my own server | Slower, and weaker at multi-step tool calls than Gemini |
+
+| Decision                                                     | Why                                                                                       | Trade-off                                                                     |
+| ------------------------------------------------------------ | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Region is classified by keyword at ingestion, not by the LLM | It's deterministic, free and testable, while an LLM mislabels tickers like `VAS` or `NDQ` | Funds with unusual names need new keywords                                    |
+| SQL for structured filters, vectors for the rest             | Vector search is poor at exact numeric limits like "MER < 0.2%"                           | The agent has to choose the right tool, which takes careful tool descriptions |
+| Local LLM as an option                                       | No API cost, and queries stay on my own server                                            | Slower, and weaker at multi-step tool calls than Gemini                       |
 
 ## Stack
+
 SvelteKit · FastAPI · PostgreSQL + pgvector · Redis · Ollama · Gemini · Pandas · Docker Compose · nginx · Cloudflare Tunnel
 
 ## Running it
+
 Runs on Docker Compose: PostgreSQL + pgvector, a FastAPI data service, Ollama for embeddings, and Gemini or a local Llama for chat. See `compose.dev.yml` for the full setup.
 
 ## What I'd improve next
+
 - An evaluation set of questions with expected funds, to measure retrieval accuracy
 - Using the LLM as a fallback region classifier when no keyword matches
 - Streaming responses

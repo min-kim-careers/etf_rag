@@ -57,9 +57,9 @@ services:
       target: dev
       args:
         - PORT=5173
-        - PUBLIC_APP_TITLE=ETF Explorer (Dev)
+        - PUBLIC_APP_TITLE=ETF Explorer (Dev Mode)
     environment:
-      - PUBLIC_APP_TITLE=ETF Explorer (Dev)
+      - PUBLIC_APP_TITLE=ETF Explorer (Dev Mode)
 
       # flags
       - SIGNUP_ENABLED=false
@@ -70,7 +70,7 @@ services:
 
       - GEMINI_API_KEY=${GEMINI_API_KEY}
 
-      - BETTER_AUTH_URL=http://192.168.8.103:8083
+      - BETTER_AUTH_URL=http://192.168.8.103:8081
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
 
       - TEMP_USER=temp@temp.com
@@ -94,7 +94,7 @@ services:
     image: nginx:latest
     restart: always
     ports:
-      - 8083:80
+      - 8081:80
     environment:
       - HOST=192.168.8.103
       - WEB_SERVICE=http://etf_dev_web-service:5173
