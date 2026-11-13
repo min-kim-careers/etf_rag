@@ -12,8 +12,3 @@ export const POST = async ({ params, request, locals }): Promise<any> => {
 			break
 	}
 }
-
-// await fetch('/api/user/delete', {
-// 	method: 'POST',
-// 	body: JSON.stringify({ password: 'REDACTED' })
-// })
